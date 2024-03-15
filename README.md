@@ -41,5 +41,5 @@
 - [7gambit7](https://github.com/7gambit7)
 - [VersusXX](https://github.com/VersusXX)
 
-[license-shield]: https://img.shields.io/github/license/othneildrew/[license-url]:
+[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge:
 [license-url]: https://github.com/spbu-coding-2023/trees-11/blob/main/LICENSE.txt
