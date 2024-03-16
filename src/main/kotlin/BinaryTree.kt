@@ -55,11 +55,13 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         if (this.root == null) {
             this.root = node
         } else {
-            var isLeft: Boolean = this.root!!.key > node.key
+            var root: Node<K, V, T> = this.root!!
+            // not-null assertion operator because null cheak
+            var isLeft: Boolean = root.key > node.key
             addNode(node,
-                (if (isLeft) this.root!!.left else this.root!!.right) as Node<K, V, T>?,
-                this.root!!,
-                isLeft)
+                   (if (isLeft) root.left else root.right) as Node<K, V, T>?,
+                   root,
+                   isLeft)
         }
     }
 
@@ -84,6 +86,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         }
         else {
             this.getNode(key)!!.value = value
+            // not-null assertion operator because key is exist in tree
         }
     }
 
@@ -97,6 +100,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
 
     private tailrec fun getNode(key: K, current: Node<K, V, T>?): Node<K, V, T>? {
         return if (current == null) null
+        else if (current.key == key) current
         else if (current.key > key) getNode(key, current.left as Node<K, V, T>?)
         else getNode(key, current.right as Node<K, V, T>?)
     }
@@ -279,7 +283,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
 
     fun merge(tree: Tree<K, V, T>) {
         if (this.root == null) this.root = tree.root
-        else this.max()!!.right = tree.root as T?
+        else (this.max()?: throw NullPointerException("No null tree have null maximum")).right = tree.root as T?
     }
 
     fun split(x: K): Pair<Tree<K, V, T>, Tree<K, V, T>> {
@@ -303,6 +307,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     fun toStringBeautifulWidth(): String {
         return if (this.root == null) ""
         else this.toStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!!).toString()
+        // not-null assertion operator because null check
     }
 
     private fun toStringBeautifulWidth(

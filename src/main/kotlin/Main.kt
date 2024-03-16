@@ -5,8 +5,10 @@ fun main() {
     tree.add(0, "A")
     tree.add(2, "C")
 
+    tree[0] = "A_BUT_OTHER"
+
     var secondTree = BinaryTree<Int, String>()
-    secondTree.add(5, "E")
+    secondTree[5] = "E"
     secondTree.add(4, "D")
     secondTree.add(6, "F")
     tree.merge(secondTree)
