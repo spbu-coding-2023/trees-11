@@ -4,7 +4,7 @@ import kotlin.math.floor
 
 
 open class Node<K : Comparable<K>, V, T> internal constructor(
-    val key: K,
+    var key: K,
     var value: V,
     internal var left: T? = null,
     internal var right: T? = null,
@@ -40,6 +40,14 @@ open class Node<K : Comparable<K>, V, T> internal constructor(
 
     override fun toString(): String {
         return "$key $value"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if (other !is Node<*, *, *>) false else (this.key == other.key && this.value == other.value)
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
     }
 
 }
@@ -114,7 +122,75 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         return if (node == null) default else node
     }
 
-    open fun delete(key: K) {}
+    open fun delete(key: K) {
+        if (this.root != null) this.delete(this.root!!)
+    }
+
+    private fun delete(current: Node<K, V, T>) {
+        var parent = current.parent
+        if (current.left == null && current.right == null) {
+            if (parent == null) {
+                this.root = null
+            } else if ((parent as Node<K, V, T>).left === current) {
+                (parent as Node<K, V, T>).left = null
+            } else {
+                (parent as Node<K, V, T>).right = null
+            }
+        } else if (current.left == null || current.right == null) {
+            if (current.left == null) {
+                if (parent == null) {
+                    this.root = current.right as Node<K, V, T>
+                } else {
+                    if ((parent as Node<K, V, T>).left === current) {
+                        (parent as Node<K, V, T>).left = current.right
+                    } else {
+                        (parent as Node<K, V, T>).right = current.right
+                    }
+                    (current.right as Node<K, V, T>).parent = parent
+                }
+            } else {
+                if (parent == null) {
+                    this.root = current.left as Node<K, V, T>
+                } else {
+                    if ((parent as Node<K, V, T>).left === current) {
+                        (parent as Node<K, V, T>).left = current.left
+                    } else {
+                        (parent as Node<K, V, T>).right = current.left
+                    }
+                    (current.left as Node<K, V, T>).parent = parent
+                }
+            }
+        } else {
+            var next = getNext(current)!!
+            current.key = next.key
+            if ((next.parent as Node<K, V, T>).left === next) {
+                (next.parent as Node<K, V, T>).left = next.right
+                if (next.right != null) {
+                    (next.right as Node<K, V, T>).parent = next.parent
+                }
+            } else {
+                (next.parent as Node<K, V, T>).right = next.right
+                if (next.right != null) {
+                    (next.right as Node<K, V, T>).parent = next.parent
+                }
+            }
+
+            next.left = current.left
+            if (next.left != null) (next.left as Node<K, V, T>).parent = current.parent
+            next.right = current.right
+            if (next.left != null) (next.right as Node<K, V, T>).parent = current.parent
+            next.parent = current.parent
+            if (next.parent != null) {
+                if ((next.parent as Node<K, V, T>).left === current) {
+                    (next.parent as Node<K, V, T>).left = next as T
+                } else {
+                    (next.parent as Node<K, V, T>).right = next as T
+                }
+            } else {
+                this.root = next
+            }
+        }
+    }
 
     fun isKey(key: K): Boolean {
         return isKey(key, this.root)
@@ -446,6 +522,4 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     }
 }
 
-class BinaryTree<K: Comparable<K>, V: Any>(root: Node.BinaryNode<K, V>? = null): Tree<K, V, Node.BinaryNode<K, V>>(root) {}
-class AVLTree<K: Comparable<K>, V: Any>(root: Node.AVLNode<K, V>? = null): Tree<K, V, Node.AVLNode<K, V>>(root) {}
-class RBTree<K: Comparable<K>, V: Any>(root: Node.RBNode<K, V>? = null): Tree<K, V, Node.RBNode<K, V>>(root) {}
+class BinaryTree<K: Comparable<K>, V: Any>(root: Node.BinaryNode<K, V>? = null): Tree<K, V, Node.BinaryNode<K, V>>(root)
