@@ -21,4 +21,5 @@ fun main() {
 
     println(tree.toStringBeautifulWidth())
     println(tree.toStringBeautifulHeight())
+
 }
