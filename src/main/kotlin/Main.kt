@@ -2,18 +2,11 @@
 fun main() {
     var tree = BinaryTree<Int, String>()
 
-    tree.add(102, "")
-    tree.add(101, "")
-    tree.add(104, "")
-    tree.add(103, "")
-    tree.add(105, "")
+    for (i in 1..10) tree.add(i * i * (i - 10), "")
 
     println(tree.toStringBeautifulWidth())
-
-    for (i in tree) {
-        println(i)
+    for (i in tree){
         tree.delete(i.key)
         println(tree.toStringBeautifulWidth())
-
     }
 }

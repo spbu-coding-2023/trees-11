@@ -1,9 +1,9 @@
-open class Node<K : Comparable<K>, V, T> internal constructor(
+open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
     var key: K,
     var value: V,
-    internal var left: T? = null,
-    internal var right: T? = null,
-    internal var parent: T? = null)
+    internal var left: Node<K, V, T>? = null,
+    internal var right: Node<K, V, T>? = null,
+    internal var parent: Node<K, V, T>? = null)
 {
 
     class BinaryNode<K : Comparable<K>, V>(
