@@ -12,7 +12,7 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
 
     override fun merge(tree: Tree<K, V, Node.RBNode<K, V>>) {
         if (this.root != null && tree.root != null) {
-            require(this.max()!!.key < tree.min()!!.key) {
+            require(this.max()!!.key < tree.min()?.key!!) {
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
             }
         }
@@ -27,7 +27,7 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
     override fun delete(key: K) {
         val node = this.getNode(key) ?: return
         if (node.left != null && node.right != null) {
-            val successor = node.right!!.min()
+            val successor = (node.right as Node.RBNode).min()
             node.key = successor.key
             node.value = successor.value
             this.deleteNode(successor)
@@ -39,8 +39,8 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
     private fun deleteNode(node: Node.RBNode<K, V>) {
         val child = if (node.right != null) node.right else node.left
         if (node.color == Node.RBNode.Color.BLACK) {
-            if (child?.color == Node.RBNode.Color.RED) {
-                child.color = Node.RBNode.Color.BLACK
+            if ((child as Node.RBNode?)?.color == Node.RBNode.Color.RED) {
+                (child as Node.RBNode).color = Node.RBNode.Color.BLACK
             } else {
                 balanceRBTree(node)
             }
@@ -58,15 +58,16 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
     override fun max(): Node.RBNode<K, V>? {
         return if (root == null) null else (root as Node.RBNode<K, V>).max()
     }
+
     override fun min(): Node.RBNode<K, V>? {
         return if (root == null) null else (root as Node.RBNode<K, V>).min()
     }
 
-    override fun toStringBeautifulWidth(): String {
-        return if (this.root == null) ""
-        else this.newToStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!! as Node.RBNode<K, V>)
-            .toString()
-    }
+//    override fun toStringBeautifulWidth(): String {
+//        return if (this.root == null) ""
+//        else this.newToStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!! as Node.RBNode<K, V>)
+//            .toString()
+//    }
 
     private fun newToStringBeautifulWidth(
         prefix: StringBuilder, isTail: Boolean, buffer: StringBuilder, current: Node.RBNode<K, V>
@@ -96,43 +97,46 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
             node.color = Node.RBNode.Color.BLACK
             return
         }
-        if (node.parent!!.color == Node.RBNode.Color.BLACK) {
+
+        val parentNode = node.parent as? Node.RBNode<K, V> ?: return
+
+        if (parentNode.color == Node.RBNode.Color.BLACK) {
             return
         }
-        if (node.parent!!.color == Node.RBNode.Color.RED) {
-            if (node.parent!!.parent!!.left == node.parent) {
-                val uncle = node.parent!!.parent!!.right
-                if (uncle?.color == Node.RBNode.Color.RED) {
-                    node.parent!!.color = Node.RBNode.Color.BLACK
-                    uncle.color = Node.RBNode.Color.BLACK
-                    node.parent!!.parent!!.color = Node.RBNode.Color.RED
-                    balanceRBTree(node.parent!!.parent!!)
-                } else {
-                    if (node.parent!!.right == node) {
-                        node.parent!!.leftRotate()
-                        balanceRBTree(node.left!!)
-                    } else {
-                        node.parent!!.parent!!.rightRotate()
-                        node.parent!!.color = Node.RBNode.Color.BLACK
-                        node.parent!!.right!!.color = Node.RBNode.Color.RED
-                    }
-                }
+        val grandparentNode = parentNode.parent as? Node.RBNode<K, V> ?: return
+
+        if (parentNode == grandparentNode.left) {
+            val uncle = grandparentNode.right as? Node.RBNode<K, V>
+            if (uncle?.color == Node.RBNode.Color.RED) {
+                parentNode.color = Node.RBNode.Color.BLACK
+                uncle.color = Node.RBNode.Color.BLACK
+                grandparentNode.color = Node.RBNode.Color.RED
+                balanceRBTree(grandparentNode)
             } else {
-                val uncle = node.parent!!.parent!!.left
-                if (uncle?.color == Node.RBNode.Color.RED) {
-                    node.parent!!.color = Node.RBNode.Color.BLACK
-                    uncle.color = Node.RBNode.Color.BLACK
-                    node.parent!!.parent!!.color = Node.RBNode.Color.RED
-                    balanceRBTree(node.parent!!.parent!!)
+                if (node == parentNode.right) {
+                    parentNode.leftRotate()
+                    balanceRBTree(node.left as Node.RBNode<K, V>)
                 } else {
-                    if (node.parent!!.left == node) {
-                        node.parent!!.rightRotate()
-                        balanceRBTree(node.right!!)
-                    } else {
-                        node.parent!!.parent!!.leftRotate()
-                        node.parent!!.color = Node.RBNode.Color.BLACK
-                        node.parent!!.left!!.color = Node.RBNode.Color.RED
-                    }
+                    grandparentNode.rightRotate()
+                    parentNode.color = Node.RBNode.Color.BLACK
+                    (parentNode.right as Node.RBNode<K, V>?)?.color = Node.RBNode.Color.RED
+                }
+            }
+        } else {
+            val uncle = grandparentNode.left as? Node.RBNode<K, V>
+            if (uncle?.color == Node.RBNode.Color.RED) {
+                parentNode.color = Node.RBNode.Color.BLACK
+                uncle.color = Node.RBNode.Color.BLACK
+                grandparentNode.color = Node.RBNode.Color.RED
+                balanceRBTree(grandparentNode)
+            } else {
+                if (node == parentNode.left) {
+                    parentNode.rightRotate()
+                    balanceRBTree((node.right as Node.RBNode<K, V>))
+                } else {
+                    grandparentNode.leftRotate()
+                    parentNode.color = Node.RBNode.Color.BLACK
+                    (parentNode.left as Node.RBNode<K, V>?)?.color = Node.RBNode.Color.RED
                 }
             }
         }

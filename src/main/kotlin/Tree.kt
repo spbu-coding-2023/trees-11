@@ -2,7 +2,6 @@ import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
 
-
 open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     var root: Node<K, V, T>? = null
 ): Iterable<Node<K, V, T>> {
@@ -149,10 +148,10 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     private tailrec fun isKey(key: K, current: Node<K, V, T>?): Boolean {
-        if (current == null) return false
-        else if (current.key == key) return true
-        else if (current.key > key) return isKey(key, current.left)
-        else return isKey(key, current.right)
+        return if (current == null) false
+        else if (current.key == key) true
+        else if (current.key > key) isKey(key, current.left)
+        else isKey(key, current.right)
     }
 
     open fun min(): Node<K, V, T>? {
