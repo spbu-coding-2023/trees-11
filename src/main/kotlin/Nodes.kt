@@ -23,6 +23,22 @@ open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
         var color: Color = Color.RED
     ) : Node<K, V, RBNode<K, V>>(key, value, left, right, parent) {
         enum class Color { RED, BLACK }
+
+        fun max(): RBNode<K, V> {
+            var current = this
+            while (current.right != null) {
+                current = current.right as RBNode<K, V>
+            }
+            return current
+        }
+
+        fun min(): RBNode<K, V> {
+            var current = this
+            while (current.left != null) {
+                current = current.left as RBNode<K, V>
+            }
+            return current
+        }
     }
     class AVLNode<K : Comparable<K>, V>(
         key: K,
