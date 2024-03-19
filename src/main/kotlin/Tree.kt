@@ -34,11 +34,11 @@ open class Tree <K: Comparable<K>, V: Any, T> (
             require(current.key != node.key) {
                 throw IllegalArgumentException("Multiple uses of key: ${node.key}. To modify value use set function")
             }
-            var isLeft: Boolean = current.key > node.key
+            val isAddedLeft: Boolean = current.key > node.key
             addNode(node,
-                (if (isLeft) current.left else current.right) as Node<K, V, T>?,
+                (if (isAddedLeft) current.left else current.right) as Node<K, V, T>?,
                 current,
-                isLeft)
+                isAddedLeft)
         }
     }
 
@@ -67,17 +67,16 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         else getNode(key, current.right as Node<K, V, T>?)
     }
 
-    fun getOrDeault(key: K, default: V): V {
+    fun getOrDefault(key: K, default: V): V {
         var node: Node<K, V, T>? = getNode(key)
-        return if (node == null) default else node.value
+        return node?.value ?: default
     }
-    fun getOrDeaultNode(key: K, default: Node<K, V, T>): Node<K, V, T> {
-        var node = getNode(key, this.root)
-        return if (node == null) default else node
+    fun getOrDefaultNode(key: K, default: Node<K, V, T>): Node<K, V, T> {
+        return getNode(key, root) ?: default
     }
 
     open fun delete(key: K) {
-        if (this.root != null) this.delete(this.root!!)
+        if (this.getNode(key) != null) this.delete(this.getNode(key)!!)
     }
 
     private fun delete(current: Node<K, V, T>) {
@@ -100,8 +99,8 @@ open class Tree <K: Comparable<K>, V: Any, T> (
                     } else {
                         (parent as Node<K, V, T>).right = current.right
                     }
-                    (current.right as Node<K, V, T>).parent = parent
                 }
+                (current.right as Node<K, V, T>).parent = parent
             } else {
                 if (parent == null) {
                     this.root = current.left as Node<K, V, T>
@@ -130,9 +129,9 @@ open class Tree <K: Comparable<K>, V: Any, T> (
             }
 
             next.left = current.left
-            if (next.left != null) (next.left as Node<K, V, T>).parent = current.parent
+            if (next.left != null) (next.left as Node<K, V, T>).parent = next as T
             next.right = current.right
-            if (next.left != null) (next.right as Node<K, V, T>).parent = current.parent
+            if (next.left != null) (next.right as Node<K, V, T>).parent = next as T
             next.parent = current.parent
             if (next.parent != null) {
                 if ((next.parent as Node<K, V, T>).left === current) {
@@ -142,6 +141,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
                 }
             } else {
                 this.root = next
+                next.parent = null
             }
         }
     }
@@ -174,7 +174,6 @@ open class Tree <K: Comparable<K>, V: Any, T> (
 
     private fun max(node: Node<K, V, T>?): Node<K, V, T>? {
         if (node != null) {
-            println(node.value)
             return if (node.right == null) node else min(node.right as Node<K, V, T>?)
         }
         else return null
@@ -216,10 +215,6 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     inner class ByKeyIterator<K : Comparable<K>, V: Any>(private val tree: Tree<K, V, T>) :
         Iterator<Node<K, V, T>> {
         private var current: Node<K, V, T>? = tree.min()
-
-        init {
-            println(current)
-        }
 
         override fun hasNext(): Boolean {
             return current != null
@@ -450,7 +445,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
                             for (k in 0..(hpw - 1)) {
                                 buffer.append(if (j % 2 == 0) " " else "─")
                             }
-                            buffer.append(if (j % 2 === 0) "┌" else "┐")
+                            buffer.append(if (j % 2 == 0) "┌" else "┐")
                             for (k in 0..(hpw - 1)) {
                                 buffer.append(if (j % 2 != 0) " " else "─")
                             }
