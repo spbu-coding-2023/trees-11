@@ -6,16 +6,16 @@ import kotlin.math.floor
 open class Tree <K: Comparable<K>, V: Any, T> (
     var root: Node<K, V, T>? = null
 ): Iterable<Node<K, V, T>> {
-    fun add(key: K, value: V) {
+    open fun add(key: K, value: V) {
         var node: Node<K, V, T> = Node<K, V, T>(key, value)
         this.addNode(node)
     }
-    fun addNode(node: Node<K, V, T>) {
+    open fun addNode(node: Node<K, V, T>) {
         if (this.root == null) {
             this.root = node
         } else {
             var root: Node<K, V, T> = this.root!!
-            // not-null assertion operator because null cheak
+            // not-null assertion operator because null check
             var isLeft: Boolean = root.key > node.key
             addNode(node,
                    (if (isLeft) root.left else root.right) as Node<K, V, T>?,
@@ -157,7 +157,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         else return isKey(key, current.right as Node<K, V, T>?)
     }
 
-    fun min(): Node<K, V, T>? {
+    open fun min(): Node<K, V, T>? {
         return if (root == null) null else min(root)
     }
 
@@ -168,7 +168,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         else return null
     }
 
-    fun max(): Node<K, V, T>? {
+    open fun max(): Node<K, V, T>? {
         return if (root == null) null else max(root)
     }
 
@@ -310,7 +310,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         return DFSIterator(this)
     }
 
-    fun merge(tree: Tree<K, V, T>) {
+    open fun merge(tree: Tree<K, V, T>) {
         if (this.root != null && tree.root != null) {
             require(this.max()!!.key < tree.min()!!.key) {
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
@@ -338,7 +338,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         return clonedTree
     }
 
-    fun toStringBeautifulWidth(): String {
+    open fun toStringBeautifulWidth(): String {
         return if (this.root == null) ""
         else this.toStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!!).toString()
         // not-null assertion operator because null check
