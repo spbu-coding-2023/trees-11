@@ -3,42 +3,42 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 
-open class Tree <K: Comparable<K>, V: Any, T> (
+open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     var root: Node<K, V, T>? = null
 ): Iterable<Node<K, V, T>> {
-    fun add(key: K, value: V) {
-        var node: Node<K, V, T> = Node<K, V, T>(key, value)
+    open fun add(key: K, value: V) {
+        val node: Node<K, V, T> = Node<K, V, T>(key, value)
         this.addNode(node)
     }
-    fun addNode(node: Node<K, V, T>) {
+    open fun addNode(node: Node<K, V, T>) {
         if (this.root == null) {
             this.root = node
         } else {
-            var root: Node<K, V, T> = this.root!!
-            // not-null assertion operator because null cheak
-            var isLeft: Boolean = root.key > node.key
+            val root: Node<K, V, T> = this.root!!
+            // not-null assertion operator because null check
+            val isLeft: Boolean = root.key > node.key
             addNode(node,
-                   (if (isLeft) root.left else root.right) as Node<K, V, T>?,
-                   root,
-                   isLeft)
+                (if (isLeft) root.left else root.right),
+                root,
+                isLeft)
         }
     }
 
     private tailrec fun addNode(node: Node<K, V, T>, current: Node<K, V, T>?, parent: Node<K, V, T>, isLeft: Boolean) {
         if (current == null) {
-            if (isLeft) parent.left = node as T
-            else parent.right = node as T
+            if (isLeft) parent.left = node
+            else parent.right = node
 
-            node.parent = parent as T
+            node.parent = parent
         } else {
             require(current.key != node.key) {
                 throw IllegalArgumentException("Multiple uses of key: ${node.key}. To modify value use set function")
             }
-            var isLeft: Boolean = current.key > node.key
+            val isAddedLeft: Boolean = current.key > node.key
             addNode(node,
-                (if (isLeft) current.left else current.right) as Node<K, V, T>?,
+                (if (isAddedLeft) current.left else current.right),
                 current,
-                isLeft)
+                isAddedLeft)
         }
     }
 
@@ -52,10 +52,8 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         }
     }
 
-    operator fun get(key: K): V? {
-        var node: Node<K, V, T>? = getNode(key)
-        return if (node == null) null else node.value
-    }
+    operator fun get(key: K): V? = getNode(key)?.value
+
     fun getNode(key: K): Node<K, V, T>? {
         return getNode(key, this.root)
     }
@@ -63,85 +61,85 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     private tailrec fun getNode(key: K, current: Node<K, V, T>?): Node<K, V, T>? {
         return if (current == null) null
         else if (current.key == key) current
-        else if (current.key > key) getNode(key, current.left as Node<K, V, T>?)
-        else getNode(key, current.right as Node<K, V, T>?)
+        else if (current.key > key) getNode(key, current.left)
+        else getNode(key, current.right)
     }
 
-    fun getOrDeault(key: K, default: V): V {
-        var node: Node<K, V, T>? = getNode(key)
-        return if (node == null) default else node.value
+    fun getOrDefault(key: K, default: V): V {
+        val node: Node<K, V, T>? = getNode(key)
+        return node?.value ?: default
     }
-    fun getOrDeaultNode(key: K, default: Node<K, V, T>): Node<K, V, T> {
-        var node = getNode(key, this.root)
-        return if (node == null) default else node
+    fun getOrDefaultNode(key: K, default: Node<K, V, T>): Node<K, V, T> {
+        return getNode(key, root) ?: default
     }
 
     open fun delete(key: K) {
-        if (this.root != null) this.delete(this.root!!)
+        if (this.getNode(key) != null) this.delete(this.getNode(key)!!)
     }
 
     private fun delete(current: Node<K, V, T>) {
-        var parent = current.parent
+        val parent = current.parent
         if (current.left == null && current.right == null) {
             if (parent == null) {
                 this.root = null
-            } else if ((parent as Node<K, V, T>).left === current) {
-                (parent as Node<K, V, T>).left = null
+            } else if (parent.left === current) {
+                parent.left = null
             } else {
-                (parent as Node<K, V, T>).right = null
+                parent.right = null
             }
         } else if (current.left == null || current.right == null) {
             if (current.left == null) {
                 if (parent == null) {
                     this.root = current.right as Node<K, V, T>
                 } else {
-                    if ((parent as Node<K, V, T>).left === current) {
-                        (parent as Node<K, V, T>).left = current.right
+                    if (parent.left === current) {
+                        parent.left = current.right
                     } else {
-                        (parent as Node<K, V, T>).right = current.right
+                        parent.right = current.right
                     }
-                    (current.right as Node<K, V, T>).parent = parent
                 }
+                (current.right as Node<K, V, T>).parent = parent
             } else {
                 if (parent == null) {
                     this.root = current.left as Node<K, V, T>
                 } else {
-                    if ((parent as Node<K, V, T>).left === current) {
-                        (parent as Node<K, V, T>).left = current.left
+                    if (parent.left === current) {
+                        parent.left = current.left
                     } else {
-                        (parent as Node<K, V, T>).right = current.left
+                        parent.right = current.left
                     }
-                    (current.left as Node<K, V, T>).parent = parent
+                    parent.parent = parent
                 }
             }
         } else {
-            var next = getNext(current)!!
+            val next = getNext(current)!!
             current.key = next.key
-            if ((next.parent as Node<K, V, T>).left === next) {
-                (next.parent as Node<K, V, T>).left = next.right
+            if (next.parent!!.left === next) {
+                next.parent!!.left = next.right
                 if (next.right != null) {
-                    (next.right as Node<K, V, T>).parent = next.parent
+                    next.right!!.parent = next.parent
                 }
             } else {
-                (next.parent as Node<K, V, T>).right = next.right
+                next.parent!!.right = next.right
                 if (next.right != null) {
-                    (next.right as Node<K, V, T>).parent = next.parent
+                    next.right!!.parent = next.parent
                 }
             }
 
             next.left = current.left
-            if (next.left != null) (next.left as Node<K, V, T>).parent = current.parent
+            if (next.left != null) next.left!!.parent = next
             next.right = current.right
-            if (next.left != null) (next.right as Node<K, V, T>).parent = current.parent
+            if (next.left != null) next.right!!.parent = next
             next.parent = current.parent
             if (next.parent != null) {
-                if ((next.parent as Node<K, V, T>).left === current) {
-                    (next.parent as Node<K, V, T>).left = next as T
+                if (next.parent!!.left === current) {
+                    next.parent!!.left = next
                 } else {
-                    (next.parent as Node<K, V, T>).right = next as T
+                    next.parent!!.right = next
                 }
             } else {
                 this.root = next
+                next.parent = null
             }
         }
     }
@@ -153,46 +151,42 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     private tailrec fun isKey(key: K, current: Node<K, V, T>?): Boolean {
         if (current == null) return false
         else if (current.key == key) return true
-        else if (current.key > key) return isKey(key, current.left as Node<K, V, T>?)
-        else return isKey(key, current.right as Node<K, V, T>?)
+        else if (current.key > key) return isKey(key, current.left)
+        else return isKey(key, current.right)
     }
 
-    fun min(): Node<K, V, T>? {
+    open fun min(): Node<K, V, T>? {
         return if (root == null) null else min(root)
     }
 
     private fun min(node: Node<K, V, T>?): Node<K, V, T>? {
-        if (node != null) {
-            return if (node.left == null) node else min(node.left as Node<K, V, T>?)
-        }
-        else return null
+        return if (node != null) {
+            if (node.left == null) node else min(node.left)
+        } else null
     }
 
-    fun max(): Node<K, V, T>? {
+    open fun max(): Node<K, V, T>? {
         return if (root == null) null else max(root)
     }
 
     private fun max(node: Node<K, V, T>?): Node<K, V, T>? {
-        if (node != null) {
-            println(node.value)
-            return if (node.right == null) node else min(node.right as Node<K, V, T>?)
-        }
-        else return null
+        return if (node != null) {
+            if (node.right == null) node else min(node.right)
+        } else null
     }
 
     fun getNext(node: Node<K, V, T>): Node<K, V, T>? {
         if (node.right != null) {
             // If the right subtree is not null, the successor is the leftmost node in the right subtree
-            return min(node.right as Node<K, V, T>)
+            return min(node.right)
         }
 
         // If the right subtree is null, the successor is the first ancestor whose left child is also an ancestor
         var current = node
-        var parent = node.parent as? Node<K, V, T>
+        var parent = node.parent
         while (parent != null && current == parent.right) {
-
             current = parent
-            parent = parent.parent as? Node<K, V, T>
+            parent = parent.parent
         }
         return parent
     }
@@ -200,26 +194,23 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     fun getPrev(node: Node<K, V, T>): Node<K, V, T>? {
         if (node.left != null) {
             // If the left subtree is not null, the predecessor is the rightmost node in the left subtree
-            return max(node.left as? Node<K, V, T>)
+            return max(node.left)
         }
 
         // If the left subtree is null, the predecessor is the first ancestor whose right child is also an ancestor
         var current = node
-        var parent = node.parent as? Node<K, V, T>
+        var parent = node.parent
         while (parent != null && current == parent.left) {
             current = parent
-            parent = parent.parent as? Node<K, V, T>
+            parent = parent.parent
         }
         return parent
     }
 
-    inner class ByKeyIterator<K : Comparable<K>, V: Any>(private val tree: Tree<K, V, T>) :
-        Iterator<Node<K, V, T>> {
+    inner class ByKeyIterator(
+        private val tree: Tree<K, V, T>
+    ) : Iterator<Node<K, V, T>> {
         private var current: Node<K, V, T>? = tree.min()
-
-        init {
-            println(current)
-        }
 
         override fun hasNext(): Boolean {
             return current != null
@@ -232,24 +223,25 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         }
     }
 
+
     inner class BFSIterator(tree: Tree<K, V, T>): Iterator<Node<K, V, T>> {
 
-        var queue: Queue<Node<K, V, T>> = LinkedList<Node<K, V, T>>()
+        private var queue: Queue<Node<K, V, T>> = LinkedList()
 
         init {
-            var BSIqueue: Queue<Node<K, V, T>> = LinkedList<Node<K, V, T>>()
+            val BSIqueue: Queue<Node<K, V, T>> = LinkedList()
             if (tree.root != null) {
                 BSIqueue.add(tree.root)
                 queue.add(tree.root)
                 while (!BSIqueue.isEmpty()) {
-                    var current: Node<K, V, T> = BSIqueue.poll()
+                    val current: Node<K, V, T> = BSIqueue.poll()
                     if (current.left != null) {
-                        BSIqueue.add(current.left as Node<K, V, T>)
-                        queue.add(current.left as Node<K, V, T>)
+                        BSIqueue.add(current.left)
+                        queue.add(current.left)
                     }
                     if (current.right != null) {
-                        BSIqueue.add(current.right as Node<K, V, T>)
-                        queue.add(current.right as Node<K, V, T>)
+                        BSIqueue.add(current.right)
+                        queue.add(current.right)
                     }
                 }
             }
@@ -267,15 +259,15 @@ open class Tree <K: Comparable<K>, V: Any, T> (
 
     inner class DFSIterator(tree: Tree<K, V, T>): Iterator<Node<K, V, T>> {
 
-        var stack: Stack<Node<K, V, T>> = Stack<Node<K, V, T>>()
+        private var stack: Stack<Node<K, V, T>> = Stack<Node<K, V, T>>()
 
         init {
-            var DFSstack: Stack<Node<K, V, T>> = Stack<Node<K, V, T>>()
+            val DFSstack: Stack<Node<K, V, T>> = Stack<Node<K, V, T>>()
             if (tree.root != null) {
                 DFSstack.add(tree.root)
                 stack.add(tree.root)
                 while (!DFSstack.isEmpty()) {
-                    var current: Node<K, V, T> = DFSstack.pop()
+                    val current: Node<K, V, T> = DFSstack.pop()
                     if (current.left != null) {
                         DFSstack.add(current.left as Node<K, V, T>)
                         stack.add(current.left as Node<K, V, T>)
@@ -310,19 +302,19 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         return DFSIterator(this)
     }
 
-    fun merge(tree: Tree<K, V, T>) {
+    open fun merge(tree: Tree<K, V, T>) {
         if (this.root != null && tree.root != null) {
             require(this.max()!!.key < tree.min()!!.key) {
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
             }
         }
         if (this.root == null) this.root = tree.root
-        else this.max()!!.right = tree.root as T?
+        else this.max()!!.right = tree.root
     }
 
     fun split(x: K): Pair<Tree<K, V, T>, Tree<K, V, T>> {
-        var lowerTree: Tree<K, V, T> = Tree<K, V, T>()
-        var biggerTree: Tree<K, V, T> = Tree<K, V, T>()
+        val lowerTree: Tree<K, V, T> = Tree()
+        val biggerTree: Tree<K, V, T> = Tree()
 
         for (i in this.iterateBFS()) {
             if (i.key < x) lowerTree.addNode(i)
@@ -332,13 +324,13 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     }
 
     fun clone(): Tree<K, V, T> {
-        var clonedTree: Tree<K, V, T> = Tree<K, V, T>()
+        val clonedTree: Tree<K, V, T> = Tree()
 
         for (i in this.iterateBFS()) clonedTree.add(i.key, i.value)
         return clonedTree
     }
 
-    fun toStringBeautifulWidth(): String {
+    open fun toStringBeautifulWidth(): String {
         return if (this.root == null) ""
         else this.toStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!!).toString()
         // not-null assertion operator because null check
@@ -351,7 +343,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         current: Node<K, V, T>): StringBuilder
     {
         if (current.right != null) {
-            var newPrefix = StringBuilder()
+            val newPrefix = StringBuilder()
             newPrefix.append(prefix)
             newPrefix.append(if (isTail) "|   " else "    ")
             this.toStringBeautifulWidth(newPrefix, false, buffer, current.right as Node<K, V, T>)
@@ -361,7 +353,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
         buffer.append(current.toString())
         buffer.append("\n")
         if (current.left != null) {
-            var newPrefix = StringBuilder()
+            val newPrefix = StringBuilder()
             newPrefix.append(prefix)
             newPrefix.append(if (!isTail) "|   " else "    ")
             this.toStringBeautifulWidth(newPrefix, true, buffer, current.left as Node<K, V, T>)
@@ -373,20 +365,20 @@ open class Tree <K: Comparable<K>, V: Any, T> (
     fun toStringBeautifulHeight(): String {
         if (this.root == null) return ""
         else {
-            var buffer: StringBuilder = StringBuilder()
+            val buffer: StringBuilder = StringBuilder()
 
-            var lines: MutableList<MutableList<String?>> = mutableListOf<MutableList<String?>>()
+            val lines: MutableList<MutableList<String?>> = mutableListOf()
 
-            var level: MutableList<Node<K, V, T>?> = mutableListOf<Node<K, V, T>?>()
-            var next: MutableList<Node<K, V, T>?> = mutableListOf<Node<K, V, T>?>()
+            var level: MutableList<Node<K, V, T>?> = mutableListOf()
+            var next: MutableList<Node<K, V, T>?> = mutableListOf()
 
             level.add(this.root)
 
-            var nodeNumber: Int = 1
-            var widtest: Int = 0
+            var nodeNumber = 1
+            var widtest = 0
 
             while (nodeNumber != 0) {
-                var line: MutableList<String?> = mutableListOf<String?>()
+                val line: MutableList<String?> = mutableListOf()
 
                 nodeNumber = 0
 
@@ -397,13 +389,13 @@ open class Tree <K: Comparable<K>, V: Any, T> (
                         next.add(null)
                         next.add(null)
                     } else {
-                        var strNode: String = node.toString()
+                        val strNode: String = node.toString()
                         line.addLast(strNode)
 
                         if (strNode.length > widtest) widtest = strNode.length
 
-                        next.add(node.left as Node<K, V, T>?)
-                        next.add(node.right as Node<K, V, T>?)
+                        next.add(node.left)
+                        next.add(node.right)
 
                         if (node.left != null) nodeNumber++
                         if (node.right != null) nodeNumber++
@@ -413,7 +405,7 @@ open class Tree <K: Comparable<K>, V: Any, T> (
                 widtest += widtest % 2
 
                 lines.add(line)
-                var swap = level
+                val swap = level
                 level = next
                 next = swap
                 next.clear()
@@ -424,13 +416,13 @@ open class Tree <K: Comparable<K>, V: Any, T> (
             for (i in 1..perpiece / 2) buffer.append("─")
             buffer.append("┐\n")
 
-            for (i in 0..(lines.size - 1)) {
-                var line: MutableList<String?> = lines[i]
+            for (i in 0..<lines.size) {
+                val line: MutableList<String?> = lines[i]
 
-                var hpw: Int = floor(perpiece / 2f - 1).toInt()
+                val hpw: Int = floor(perpiece / 2f - 1).toInt()
 
                 if (i > 0) {
-                    for (j in 0..(line.size - 1)) {
+                    for (j in 0..<line.size) {
                         var c: Char = ' '
 
                         if (j % 2 == 1) {
@@ -447,22 +439,22 @@ open class Tree <K: Comparable<K>, V: Any, T> (
                                 buffer.append(" ")
                             }
                         } else {
-                            for (k in 0..(hpw - 1)) {
+                            for (k in 0..<hpw) {
                                 buffer.append(if (j % 2 == 0) " " else "─")
                             }
-                            buffer.append(if (j % 2 === 0) "┌" else "┐")
-                            for (k in 0..(hpw - 1)) {
+                            buffer.append(if (j % 2 == 0) "┌" else "┐")
+                            for (k in 0..<hpw) {
                                 buffer.append(if (j % 2 != 0) " " else "─")
                             }
                         }
                     }
                     buffer.append("\n")
                 }
-                for (j in 0..(line.size - 1)) {
+                for (j in 0..<line.size) {
                     var f: String? = line[j]
                     if (f == null) f = ""
-                    var gap1: Int = ceil(perpiece / 2f - f.length / 2f).toInt()
-                    var gap2: Int = floor(perpiece / 2f - f.length / 2f).toInt()
+                    val gap1: Int = ceil(perpiece / 2f - f.length / 2f).toInt()
+                    val gap2: Int = floor(perpiece / 2f - f.length / 2f).toInt()
 
                     for (k in 1..gap1) {
                         buffer.append(" ")
