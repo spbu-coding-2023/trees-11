@@ -155,29 +155,30 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     open fun min(): Node<K, V, T>? {
-        return if (root == null) null else min(root)
+        val rootNow = this.root
+        return if (rootNow == null) null else min(rootNow)
     }
 
-    private fun min(node: Node<K, V, T>?): Node<K, V, T>? {
-        return if (node != null) {
-            if (node.left == null) node else min(node.left)
-        } else null
+    internal fun min(node: Node<K, V, T>): Node<K, V, T>? {
+        val left = node.left
+        return if (left == null) node else min(left)
     }
 
     open fun max(): Node<K, V, T>? {
-        return if (root == null) null else max(root)
+        val rootNow = this.root
+        return if (rootNow == null) null else max(rootNow)
     }
 
-    private fun max(node: Node<K, V, T>?): Node<K, V, T>? {
-        return if (node != null) {
-            if (node.right == null) node else min(node.right)
-        } else null
+    internal fun max(node: Node<K, V, T>): Node<K, V, T>? {
+        val right = node.right
+        return if (right == null) node else max(right)
     }
 
     fun getNext(node: Node<K, V, T>): Node<K, V, T>? {
-        if (node.right != null) {
+        val right = node.right
+        if (right != null) {
             // If the right subtree is not null, the successor is the leftmost node in the right subtree
-            return min(node.right)
+            return min(right)
         }
 
         // If the right subtree is null, the successor is the first ancestor whose left child is also an ancestor
@@ -191,9 +192,10 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     fun getPrev(node: Node<K, V, T>): Node<K, V, T>? {
-        if (node.left != null) {
+        val left = node.left
+        if (left != null) {
             // If the left subtree is not null, the predecessor is the rightmost node in the left subtree
-            return max(node.left)
+            return max(left)
         }
 
         // If the left subtree is null, the predecessor is the first ancestor whose right child is also an ancestor
