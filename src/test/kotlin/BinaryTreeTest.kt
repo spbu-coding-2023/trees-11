@@ -384,7 +384,6 @@ class BinaryTreeTest {
         tree.add(secondKey, secondKey.toString())
 
         val clonedTree = tree.clone()
-        var isCorrect = true
 
         assert(
             tree.getNode(firstKey) == clonedTree.getNode(firstKey)
@@ -395,4 +394,248 @@ class BinaryTreeTest {
             && tree.getNode(thirdKey) !== clonedTree.getNode(thirdKey)
         )
     }
+
+    @Test
+    fun `Delete from empty tree if key isn't in tree should work correctly(do nothing)`(){
+        tree.delete(15)
+        assert(true)
+    }
+
+    @Test
+    fun `Delete should work correctly no children root`() {
+        val key = 1
+
+        tree.add(key, key.toString())
+        tree.delete(key)
+
+        assert(tree.root == null)
+    }
+
+    @Test
+    fun `Delete should work correctly no children not-root left`() {
+        val keyRoot = 0
+        val key = -1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.delete(key)
+
+        val root = tree.root
+        assert(tree.getNode(keyRoot) === root && root != null && root.left == null)
+    }
+
+    @Test
+    fun `Delete should work correctly no children not-root right`() {
+        val keyRoot = 0
+        val key = 1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.delete(key)
+
+        val root = tree.root
+        assert(tree.getNode(keyRoot) === root && root != null && root.right == null)
+    }
+
+    @Test
+    fun `Delete should work correctly left child root`() {
+        val keyRoot = 0
+        val key = -1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+
+        tree.delete(keyRoot)
+
+        assert(tree.getNode(key) === tree.root)
+    }
+
+    @Test
+    fun `Delete should work correctly right child root`() {
+        val keyRoot = 0
+        val key = 1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.delete(keyRoot)
+
+        val root = tree.root
+        assert(tree.getNode(key) === root)
+    }
+
+    @Test
+    fun `Delete should work correctly left child not-root left`() {
+        val keyRoot = 0
+        val key = -1
+        val childKey = -2
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.add(childKey, childKey.toString())
+
+        val root = tree.root
+        tree.delete(key)
+
+        assert(tree.getNode(keyRoot) === root
+                && root != null
+                && root.left === tree.getNode(childKey)
+                && tree.getNode(childKey)?.parent === root
+        )
+    }
+
+    @Test
+    fun `Delete should work correctly right child not-root left`() {
+        val keyRoot = 0
+        val key = -2
+        val childKey = -1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.add(childKey, childKey.toString())
+
+        val root = tree.root
+        tree.delete(key)
+
+        assert(tree.getNode(keyRoot) === root
+                && root != null
+                && root.left === tree.getNode(childKey)
+                && tree.getNode(childKey)?.parent === root
+        )
+    }
+
+    @Test
+    fun `Delete should work correctly left child not-root right`() {
+        val keyRoot = 0
+        val key = 2
+        val childKey = 1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.add(childKey, childKey.toString())
+
+        val root = tree.root
+        tree.delete(key)
+
+        assert(tree.getNode(keyRoot) === root
+                && root != null
+                && root.right === tree.getNode(childKey)
+                && tree.getNode(childKey)?.parent === root
+        )
+    }
+
+    @Test
+    fun `Delete should work correctly right child not-root right`() {
+        val keyRoot = 0
+        val key = 1
+        val childKey = 2
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+        tree.add(childKey, childKey.toString())
+
+        val root = tree.root
+        tree.delete(key)
+
+        assert(tree.getNode(keyRoot) === root
+                && root != null
+                && root.right === tree.getNode(childKey)
+                && tree.getNode(childKey)?.parent === root
+        )
+    }
+
+    // Madness is following...
+
+    @Test
+    fun `Delete should work correctly 2 child root where next haven't children`() {
+        val keyRoot = 0
+        val keyRight = 1
+        val keyLeft = -1
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(keyRight, keyRight.toString())
+        tree.add(keyLeft, keyLeft.toString())
+
+        tree.delete(keyRoot)
+
+        val root = tree.root
+        assert(tree.getNode(keyRight) === root
+                && root != null
+                && root.left === tree.getNode(keyLeft)
+                && tree.getNode(keyLeft)?.parent === root
+        )
+    }
+
+    @Test
+    fun `Delete should work correctly 2 child root where next has not left children`() {
+
+        // scenario explanation on picture
+        //
+        // ┌──  3                    ┌── 3
+        // |    |   ┌── 2            |   └── 2
+        // |    └── 1       ──>      1
+        // 0             (0 delete)  └── -1
+        // └── -1
+
+        val keys = arrayOf(0, -1, 3, 1, 2)
+
+        keys.forEach { tree.add(it, it.toString()) }
+
+        val next = tree.getNext(tree.root!!)
+
+        tree.delete(keys[0])
+
+        val root = tree.root
+        assert(root == next
+                && root != null
+                && root.left === tree.getNode(keys[1])
+                && tree.getNode(keys[1])?.parent === root
+                && root.right === tree.getNode(keys[2])
+                && tree.getNode(keys[2])?.parent === root
+                && root.right != null
+                && root.right?.left === tree.getNode(keys[4])
+                && tree.getNode(keys[4])?.parent === root.right
+        )
+    }
+
+    @Test
+    fun `delete should work correctly 2 child not-root`() {
+        // scenario explanation on picture
+        //      ┌── 3              ┌──  3
+        // ┌──  2                  |    └── 1
+        // |    └── 1      ──>     0
+        // 0           (2 delete)  └── -1
+        // └── -1
+
+        val keys = arrayOf(0, -1, 2, 1, 3)
+        keys.forEach { tree.add(it, it.toString()) }
+
+        val node = tree.getNode(keys[4])
+        tree.delete(keys[2])
+
+        val root = tree.root
+        assert(root != null
+                && root.left === tree.getNode(keys[1])
+                && tree.getNode(keys[1])?.parent === root
+                && node == root.right
+                && root.right?.left === tree.getNode(keys[3])
+        )
+    }
+
+    @Test
+    fun `delete should work correctly 2 child not-root but next is left child of its parent`() {
+        // scenario explanation on picture
+        // 0                            0
+        // |         ┌── -1             |    ┌── -1
+        // |    ┌── -2       ──>        └── -2
+        // └── -3          (-2 delete)       └── -4
+        //      └── -4
+
+        val keys = arrayOf(0, -3, -2, -4, -1)
+        keys.forEach { tree.add(it, it.toString()) }
+
+        tree.delete(keys[1])
+
+        val root = tree.root
+        val node = tree.getNode(keys[2])
+        assert(root != null
+                && root.left === node
+                && node?.parent === root
+                && node.left === tree.getNode(keys[3])
+                && tree.getNode(keys[3])?.parent === node
+                && node.right === tree.getNode(keys[4])
+                && tree.getNode(keys[4])?.parent === node
+        )
+    }
+
 }
