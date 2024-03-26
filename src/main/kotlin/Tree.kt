@@ -107,12 +107,13 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
                     } else {
                         parent.right = current.left
                     }
-                    parent.parent = parent
+                    (current.left as Node<K, V, T>).parent = parent
                 }
             }
         } else {
             val next = getNext(current)!!
             current.key = next.key
+            current.value = next.value
             if (next.parent!!.left === next) {
                 next.parent!!.left = next.right
                 if (next.right != null) {
@@ -128,7 +129,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
             next.left = current.left
             if (next.left != null) next.left!!.parent = next
             next.right = current.right
-            if (next.left != null) next.right!!.parent = next
+            if (next.right != null) next.right!!.parent = next
             next.parent = current.parent
             if (next.parent != null) {
                 if (next.parent!!.left === current) {
@@ -260,24 +261,17 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
 
     inner class DFSIterator(tree: Tree<K, V, T>): Iterator<Node<K, V, T>> {
 
-        private var stack: Stack<Node<K, V, T>> = Stack<Node<K, V, T>>()
+        private var stack: Queue<Node<K, V, T>> = LinkedList()
 
         init {
-            val DFSstack: Stack<Node<K, V, T>> = Stack<Node<K, V, T>>()
-            if (tree.root != null) {
-                DFSstack.add(tree.root)
-                stack.add(tree.root)
-                while (!DFSstack.isEmpty()) {
-                    val current: Node<K, V, T> = DFSstack.pop()
-                    if (current.left != null) {
-                        DFSstack.add(current.left as Node<K, V, T>)
-                        stack.add(current.left as Node<K, V, T>)
-                    }
-                    if (current.right != null) {
-                        DFSstack.add(current.right as Node<K, V, T>)
-                        stack.add(current.right as Node<K, V, T>)
-                    }
-                }
+            addToStack(tree.root)
+        }
+
+        private fun addToStack(current: Node<K, V, T>?) {
+            if (current != null) {
+                stack.add(current)
+                this.addToStack(current.left)
+                this.addToStack(current.right)
             }
         }
 
@@ -286,7 +280,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         }
 
         override fun next(): Node<K, V, T> {
-            return stack.pop()
+            return stack.poll()
         }
 
     }
