@@ -50,7 +50,7 @@ open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
     ) : Node<K, V, AVLNode<K, V>>(key, value, left, right, parent)
 
     override fun toString(): String {
-        return "$key $value"
+        return "($key: $value)"
     }
 
     override fun equals(other: Any?): Boolean {
