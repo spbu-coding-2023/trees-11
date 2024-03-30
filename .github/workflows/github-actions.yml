@@ -3,7 +3,7 @@ name: Kotlin CI with Gradle
 on:
   push:
     branches:
-      [main]
+      [main, CI]
   pull_request:
     branches:
       [main]
