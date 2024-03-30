@@ -1,5 +1,7 @@
-package org.example
 
 fun main() {
-    println("Hello World!")
+    var tree = BinaryTree<Int, String>()
+
+    tree.add(1, "1")
+    tree.add(1, "1")
 }
