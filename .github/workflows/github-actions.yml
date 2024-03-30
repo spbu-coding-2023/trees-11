@@ -3,7 +3,7 @@ name: Kotlin CI with Gradle
 on:
   push:
     branches:
-      [main]
+      [main, CI]
   pull_request:
     branches:
       [main]
@@ -24,3 +24,6 @@ jobs:
 
       - name: Testing
         run: ./gradlew test
+
+      - name: Test covering 
+        run: ./gradlew jacocoTestReport
