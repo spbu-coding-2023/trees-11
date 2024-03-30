@@ -1,10 +1,10 @@
-open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
+open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
     var key: K,
     var value: V,
     internal var left: Node<K, V, T>? = null,
     internal var right: Node<K, V, T>? = null,
-    internal var parent: Node<K, V, T>? = null)
-{
+    internal var parent: Node<K, V, T>? = null
+) {
 
     class BinaryNode<K : Comparable<K>, V>(
         key: K,
@@ -20,9 +20,23 @@ open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
         left: RBNode<K, V>? = null,
         right: RBNode<K, V>? = null,
         parent: RBNode<K, V>? = null,
-        var color: Color = Color.RED
+        var color: Color = Color.RED,
     ) : Node<K, V, RBNode<K, V>>(key, value, left, right, parent) {
         enum class Color { RED, BLACK }
+
+        companion object {
+            private const val RED_COLOR: String = "\u001B[31m"
+            private const val RESET_COLOR: String = "\u001B[0m"
+            var colored: Boolean = false
+        }
+
+        override fun toString(): String {
+            return if ( colored && color == Color.RED) {
+                "${RED_COLOR}($key: $value)${RESET_COLOR}"
+            } else {
+                "($key: $value)"
+            }
+        }
 
         fun max(): RBNode<K, V> {
             var current = this
@@ -40,6 +54,7 @@ open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
             return current
         }
     }
+
     class AVLNode<K : Comparable<K>, V>(
         key: K,
         value: V,
@@ -50,7 +65,7 @@ open class Node<K : Comparable<K>, V, T: Node<K, V, T>> internal constructor(
     ) : Node<K, V, AVLNode<K, V>>(key, value, left, right, parent)
 
     override fun toString(): String {
-        return "$key $value"
+        return "($key: $value)"
     }
 
     override fun equals(other: Any?): Boolean {

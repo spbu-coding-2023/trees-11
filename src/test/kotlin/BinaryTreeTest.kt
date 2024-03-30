@@ -1,14 +1,17 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFailsWith
 
 class BinaryTreeTest {
     private lateinit var tree: BinaryTree<Int, String>
 
     @BeforeEach
-    fun setup () {
+    fun setup() {
         tree = BinaryTree<Int, String>()
     }
+
+    // Positive
 
     @Test
     fun `value should be added to empty tree`() {
@@ -29,6 +32,7 @@ class BinaryTreeTest {
 
         assert(tree.root != null)
     }
+
     @Test
     fun `value should added correctly left-left`() {
         val firstKey = -1
@@ -39,9 +43,10 @@ class BinaryTreeTest {
         tree.add(secondKey, secondKey.toString())
         tree.add(firstKey, firstKey.toString())
 
-        assert( tree.root?.key == thirdKey &&
-                tree.root?.left?.key == secondKey &&
-                tree.root?.left?.left?.key == firstKey
+        assert(
+            tree.root?.key == thirdKey &&
+                    tree.root?.left?.key == secondKey &&
+                    tree.root?.left?.left?.key == firstKey
         )
     }
 
@@ -55,9 +60,10 @@ class BinaryTreeTest {
         tree.add(firstKey, firstKey.toString())
         tree.add(secondKey, secondKey.toString())
 
-        assert( tree.root?.key == thirdKey &&
-                tree.root?.left?.key == firstKey &&
-                tree.root?.left?.right?.key == secondKey
+        assert(
+            tree.root?.key == thirdKey &&
+                    tree.root?.left?.key == firstKey &&
+                    tree.root?.left?.right?.key == secondKey
         )
     }
 
@@ -71,9 +77,10 @@ class BinaryTreeTest {
         tree.add(thirdKey, thirdKey.toString())
         tree.add(secondKey, secondKey.toString())
 
-        assert( tree.root?.key == firstKey &&
-                tree.root?.right?.key == thirdKey &&
-                tree.root?.right?.left?.key == secondKey
+        assert(
+            tree.root?.key == firstKey &&
+                    tree.root?.right?.key == thirdKey &&
+                    tree.root?.right?.left?.key == secondKey
         )
     }
 
@@ -87,9 +94,10 @@ class BinaryTreeTest {
         tree.add(secondKey, secondKey.toString())
         tree.add(thirdKey, thirdKey.toString())
 
-        assert( tree.root?.key == firstKey &&
-                tree.root?.right?.key == secondKey &&
-                tree.root?.right?.right?.key == thirdKey
+        assert(
+            tree.root?.key == firstKey &&
+                    tree.root?.right?.key == secondKey &&
+                    tree.root?.right?.right?.key == thirdKey
         )
     }
 
@@ -145,7 +153,7 @@ class BinaryTreeTest {
         tree.add(firstKey, firstKey.toString())
         tree.add(secondKey, secondKey.toString())
 
-        assert( tree[secondKey] == secondKey.toString() )
+        assert(tree[secondKey] == secondKey.toString())
     }
 
     @Test
@@ -173,6 +181,7 @@ class BinaryTreeTest {
 
         assert(tree[thirdKey] == thirdKey.toString())
     }
+
     @Test
     fun `GetOrDefault should return value if it exist`() {
         val key = 1
@@ -199,6 +208,7 @@ class BinaryTreeTest {
 
         assert(tree.isKey(3))
     }
+
     @Test
     fun `IsKey should return false if key isn't exist (zig-zag)`() {
         val keys = arrayOf(6, 1, 5, 2, 4)
@@ -244,7 +254,7 @@ class BinaryTreeTest {
     }
 
     @Test
-    fun `getNext should return min of right child if it exist`(){
+    fun `getNext should return min of right child if it exist`() {
         val firstKey = -1
         val secondKey = 0
         val thirdKey = 1
@@ -263,7 +273,7 @@ class BinaryTreeTest {
     }
 
     @Test
-    fun `getNext should return parent if right child isn't exist`(){
+    fun `getNext should return parent if right child isn't exist`() {
         val firstKey = -1
         val secondKey = 0
         val thirdKey = 1
@@ -283,7 +293,7 @@ class BinaryTreeTest {
     }
 
     @Test
-    fun `getPrev should return max of left child if it exist`(){
+    fun `getPrev should return max of left child if it exist`() {
         val firstKey = -1
         val secondKey = 0
         val thirdKey = 1
@@ -302,7 +312,7 @@ class BinaryTreeTest {
     }
 
     @Test
-    fun `getPrev should return parent if left child isn't exist`(){
+    fun `getPrev should return parent if left child isn't exist`() {
         val firstKey = -1
         val secondKey = 0
         val thirdKey = 1
@@ -360,6 +370,14 @@ class BinaryTreeTest {
     }
 
     @Test
+    fun `Merge should work correctly on 2 empty trees`() {
+        val secondTree = BinaryTree<Int, String>()
+
+        tree.merge(secondTree)
+
+        assert(tree.root == null)
+    }
+    @Test
     fun `Split should work correctly`() {
         val firstKey = -1
         val secondKey = 0
@@ -387,16 +405,16 @@ class BinaryTreeTest {
 
         assert(
             tree.getNode(firstKey) == clonedTree.getNode(firstKey)
-            && tree.getNode(firstKey) !== clonedTree.getNode(firstKey)
-            && tree.getNode(secondKey) == clonedTree.getNode(secondKey)
-            && tree.getNode(secondKey) !== clonedTree.getNode(secondKey)
-            && tree.getNode(thirdKey) == clonedTree.getNode(thirdKey)
-            && tree.getNode(thirdKey) !== clonedTree.getNode(thirdKey)
+                    && tree.getNode(firstKey) !== clonedTree.getNode(firstKey)
+                    && tree.getNode(secondKey) == clonedTree.getNode(secondKey)
+                    && tree.getNode(secondKey) !== clonedTree.getNode(secondKey)
+                    && tree.getNode(thirdKey) == clonedTree.getNode(thirdKey)
+                    && tree.getNode(thirdKey) !== clonedTree.getNode(thirdKey)
         )
     }
 
     @Test
-    fun `Delete from empty tree if key isn't in tree should work correctly(do nothing)`(){
+    fun `Delete from empty tree if key isn't in tree should work correctly(do nothing)`() {
         tree.delete(15)
         assert(true)
     }
@@ -471,10 +489,11 @@ class BinaryTreeTest {
         val root = tree.root
         tree.delete(key)
 
-        assert(tree.getNode(keyRoot) === root
-                && root != null
-                && root.left === tree.getNode(childKey)
-                && tree.getNode(childKey)?.parent === root
+        assert(
+            tree.getNode(keyRoot) === root
+                    && root != null
+                    && root.left === tree.getNode(childKey)
+                    && tree.getNode(childKey)?.parent === root
         )
     }
 
@@ -490,10 +509,11 @@ class BinaryTreeTest {
         val root = tree.root
         tree.delete(key)
 
-        assert(tree.getNode(keyRoot) === root
-                && root != null
-                && root.left === tree.getNode(childKey)
-                && tree.getNode(childKey)?.parent === root
+        assert(
+            tree.getNode(keyRoot) === root
+                    && root != null
+                    && root.left === tree.getNode(childKey)
+                    && tree.getNode(childKey)?.parent === root
         )
     }
 
@@ -509,10 +529,11 @@ class BinaryTreeTest {
         val root = tree.root
         tree.delete(key)
 
-        assert(tree.getNode(keyRoot) === root
-                && root != null
-                && root.right === tree.getNode(childKey)
-                && tree.getNode(childKey)?.parent === root
+        assert(
+            tree.getNode(keyRoot) === root
+                    && root != null
+                    && root.right === tree.getNode(childKey)
+                    && tree.getNode(childKey)?.parent === root
         )
     }
 
@@ -528,10 +549,11 @@ class BinaryTreeTest {
         val root = tree.root
         tree.delete(key)
 
-        assert(tree.getNode(keyRoot) === root
-                && root != null
-                && root.right === tree.getNode(childKey)
-                && tree.getNode(childKey)?.parent === root
+        assert(
+            tree.getNode(keyRoot) === root
+                    && root != null
+                    && root.right === tree.getNode(childKey)
+                    && tree.getNode(childKey)?.parent === root
         )
     }
 
@@ -549,10 +571,11 @@ class BinaryTreeTest {
         tree.delete(keyRoot)
 
         val root = tree.root
-        assert(tree.getNode(keyRight) === root
-                && root != null
-                && root.left === tree.getNode(keyLeft)
-                && tree.getNode(keyLeft)?.parent === root
+        assert(
+            tree.getNode(keyRight) === root
+                    && root != null
+                    && root.left === tree.getNode(keyLeft)
+                    && tree.getNode(keyLeft)?.parent === root
         )
     }
 
@@ -576,15 +599,16 @@ class BinaryTreeTest {
         tree.delete(keys[0])
 
         val root = tree.root
-        assert(root == next
-                && root != null
-                && root.left === tree.getNode(keys[1])
-                && tree.getNode(keys[1])?.parent === root
-                && root.right === tree.getNode(keys[2])
-                && tree.getNode(keys[2])?.parent === root
-                && root.right != null
-                && root.right?.left === tree.getNode(keys[4])
-                && tree.getNode(keys[4])?.parent === root.right
+        assert(
+            root == next
+                    && root != null
+                    && root.left === tree.getNode(keys[1])
+                    && tree.getNode(keys[1])?.parent === root
+                    && root.right === tree.getNode(keys[2])
+                    && tree.getNode(keys[2])?.parent === root
+                    && root.right != null
+                    && root.right?.left === tree.getNode(keys[4])
+                    && tree.getNode(keys[4])?.parent === root.right
         )
     }
 
@@ -604,11 +628,12 @@ class BinaryTreeTest {
         tree.delete(keys[2])
 
         val root = tree.root
-        assert(root != null
-                && root.left === tree.getNode(keys[1])
-                && tree.getNode(keys[1])?.parent === root
-                && node == root.right
-                && root.right?.left === tree.getNode(keys[3])
+        assert(
+            root != null
+                    && root.left === tree.getNode(keys[1])
+                    && tree.getNode(keys[1])?.parent === root
+                    && node == root.right
+                    && root.right?.left === tree.getNode(keys[3])
         )
     }
 
@@ -628,14 +653,127 @@ class BinaryTreeTest {
 
         val root = tree.root
         val node = tree.getNode(keys[2])
-        assert(root != null
-                && root.left === node
-                && node?.parent === root
-                && node.left === tree.getNode(keys[3])
-                && tree.getNode(keys[3])?.parent === node
-                && node.right === tree.getNode(keys[4])
-                && tree.getNode(keys[4])?.parent === node
+        assert(
+            root != null
+                    && root.left === node
+                    && node?.parent === root
+                    && node.left === tree.getNode(keys[3])
+                    && tree.getNode(keys[3])?.parent === node
+                    && node.right === tree.getNode(keys[4])
+                    && tree.getNode(keys[4])?.parent === node
         )
     }
 
+    // Yes, writing test on this function is very easy
+
+    @Test
+    fun `toStringBeautifulWidth should work correctly on empty tree`() {
+        assert(tree.toStringBeautifulWidth() == "")
+    }
+
+    @Test
+    fun `toStringBeautifulWidth should work correctly on sample`() {
+        // no-child, left, right and 2 child node example
+        // because it works similar on all this scenarios
+        val keys = arrayOf(0, 1, -1, 2, -2)
+        keys.forEach { tree.add(it, it.toString()) }
+
+        val strTree = tree.toStringBeautifulWidth()
+        val expectedResult = """|       ┌── (2: 2)
+|   ┌── (1: 1)
+└── (0: 0)
+    └── (-1: -1)
+        └── (-2: -2)
+"""
+        assert(strTree == expectedResult)
+    }
+
+    @Test
+    fun `toStringBeautifulHeight should work correctly on empty tree`() {
+        assert(tree.toStringBeautifulHeight() == "")
+    }
+
+    @Test
+    fun `toStringBeautifulHeight should work correctly on sample`() {
+        // no-child, left, right and 2 child node example
+        // because it works similar on all this scenarios
+        val keys = arrayOf(0, 1, -1, 2, -2)
+        keys.forEach { tree.add(it, it.toString()) }
+
+        val strTree = tree.toStringBeautifulHeight()
+        val expectedResult = """────────────────────────┐
+                     (0: 0)                     
+            ┌───────────┴───────────┐           
+        (-1: -1)                 (1: 1)         
+      ┌─────┘                       └─────┐     
+  (-2: -2)                             (2: 2)   
+"""
+        assert(strTree == expectedResult)
+    }
+
+    @Test
+    fun `toString should work correctly on empty tree`() {
+        assert(tree.toString() == "[]")
+    }
+
+    @Test
+    fun `toString should work correctly on sample`() {
+        // no-child, left, right and 2 child node example
+        // because it works similar on all this scenarios
+        val keys = arrayOf(0, 1, -1, 2, -2)
+        keys.forEach { tree.add(it, it.toString()) }
+
+        val strTree = tree.toString()
+        val expectedResult = "[(-2: -2), (-1: -1), (0: 0), (1: 1), (2: 2)]"
+        assert(strTree == expectedResult)
+    }
+
+    // Negative
+
+    @Test
+    fun `Add should throw IllegalArgumentException on attempt to add key to root that already exist `() {
+        val key = 1
+        val message =
+            "Multiple uses of key: ${key}. To modify value use set function"
+
+        tree.add(key, key.toString())
+
+        val exception = assertFailsWith<IllegalArgumentException> {
+            tree.add(key, key.toString())
+        }
+        assert(exception.message == message)
+    }
+
+    @Test
+    fun `Add should throw IllegalArgumentException on attempt to add key to not-root that already exist`() {
+        val keyRoot = 0
+        val key = 1
+        val message =
+            "Multiple uses of key: ${key}. To modify value use set function"
+        tree.add(keyRoot, keyRoot.toString())
+        tree.add(key, key.toString())
+
+        val exception = assertFailsWith<IllegalArgumentException> {
+            tree.add(key, key.toString())
+        }
+        assert(exception.message == message)
+    }
+
+    @Test
+    fun `Merge should throw IllegalArgumentException on attempt to merge tree that isn't bigger than this`() {
+        val secondTree = BinaryTree<Int, String>()
+        val keys = arrayOf(0, 1, -1)
+        val secondKeys = arrayOf(3, 4, 0)
+
+        keys.forEach { tree.add(it, it.toString()) }
+        secondKeys.forEach { secondTree.add(it, it.toString()) }
+
+        val message =
+            "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
+
+        val exception = assertFailsWith<IllegalArgumentException> {
+            tree.merge(secondTree)
+        }
+        assert(exception.message == message)
+    }
 }

@@ -10,6 +10,9 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         this.addNode(node)
     }
     open fun addNode(node: Node<K, V, T>) {
+        require(this.root?.key != node.key) {
+            throw IllegalArgumentException("Multiple uses of key: ${node.key}. To modify value use set function")
+        }
         if (this.root == null) {
             this.root = node
         } else {
@@ -259,19 +262,42 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
 
     }
 
-    inner class DFSIterator(tree: Tree<K, V, T>): Iterator<Node<K, V, T>> {
+    enum class ModeDFS {SIMPLE, REVERSE, SYMMETRIC}
+
+    inner class DFSIterator(tree: Tree<K, V, T>, mode: ModeDFS = ModeDFS.SIMPLE): Iterator<Node<K, V, T>> {
+
 
         private var stack: Queue<Node<K, V, T>> = LinkedList()
 
         init {
-            addToStack(tree.root)
+            when (mode) {
+                ModeDFS.SIMPLE -> addToStackSimple(tree.root)
+                ModeDFS.SYMMETRIC -> addToStackSymmetric(tree.root)
+                ModeDFS.REVERSE -> addToStackSimpleReverse(tree.root)
+            }
         }
 
-        private fun addToStack(current: Node<K, V, T>?) {
+        private fun addToStackSimple(current: Node<K, V, T>?) {
             if (current != null) {
                 stack.add(current)
-                this.addToStack(current.left)
-                this.addToStack(current.right)
+                this.addToStackSimple(current.left)
+                this.addToStackSimple(current.right)
+            }
+        }
+
+        private fun addToStackSimpleReverse(current: Node<K, V, T>?) {
+            if (current != null) {
+                this.addToStackSimpleReverse(current.left)
+                this.addToStackSimpleReverse(current.right)
+                stack.add(current)
+            }
+        }
+
+        private fun addToStackSymmetric(current: Node<K, V, T>?) {
+            if (current != null) {
+                this.addToStackSymmetric(current.left)
+                stack.add(current)
+                this.addToStackSymmetric(current.right)
             }
         }
 
@@ -293,8 +319,8 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return BFSIterator(this)
     }
 
-    fun iterateDFS(): DFSIterator {
-        return DFSIterator(this)
+    fun iterateDFS(mode: ModeDFS = ModeDFS.SIMPLE): DFSIterator {
+        return DFSIterator(this, mode=mode)
     }
 
     open fun merge(tree: Tree<K, V, T>) {
@@ -323,6 +349,30 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
 
         for (i in this.iterateBFS()) clonedTree.add(i.key, i.value)
         return clonedTree
+    }
+
+    enum class TreeStringMode {NORMAL, WIDTH, HEIGHT}
+
+    fun toString(mode: TreeStringMode = TreeStringMode.NORMAL): String {
+        return when (mode) {
+            TreeStringMode.NORMAL -> this.toString()
+            TreeStringMode.WIDTH -> this.toStringBeautifulWidth()
+            TreeStringMode.HEIGHT -> this.toStringBeautifulHeight()
+        }
+    }
+
+    override fun toString(): String {
+        val buffer = StringBuilder()
+
+        buffer.append("[")
+        this.forEach {buffer.append("${it.toString()}, ")}
+        val preResult = buffer.removeSuffix(", ").toString()
+
+        val result = StringBuilder()
+        result.append(preResult)
+        result.append("]")
+
+        return result.toString()
     }
 
     open fun toStringBeautifulWidth(): String {
@@ -357,7 +407,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return buffer
     }
 
-    fun toStringBeautifulHeight(): String {
+    fun toStringBeautifulHeight(ofSide: Int = 4): String {
         if (this.root == null) return ""
         else {
             val buffer: StringBuilder = StringBuilder()
@@ -406,7 +456,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
                 next.clear()
             }
 
-            var perpiece: Int = lines[lines.size - 1].size * (widtest + 4)
+            var perpiece: Int = lines[lines.size - 1].size * (widtest + ofSide)
 
             for (i in 1..perpiece / 2) buffer.append("─")
             buffer.append("┐\n")
@@ -430,15 +480,15 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
                         buffer.append(c)
 
                         if (line[j] == null) {
-                            for (k in 0..(perpiece - 2)) {
+                            repeat(perpiece - 1) {
                                 buffer.append(" ")
                             }
                         } else {
-                            for (k in 0..<hpw) {
+                            repeat(hpw) {
                                 buffer.append(if (j % 2 == 0) " " else "─")
                             }
                             buffer.append(if (j % 2 == 0) "┌" else "┐")
-                            for (k in 0..<hpw) {
+                            repeat(hpw) {
                                 buffer.append(if (j % 2 != 0) " " else "─")
                             }
                         }
@@ -451,11 +501,11 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
                     val gap1: Int = ceil(perpiece / 2f - f.length / 2f).toInt()
                     val gap2: Int = floor(perpiece / 2f - f.length / 2f).toInt()
 
-                    for (k in 1..gap1) {
+                    repeat(gap1) {
                         buffer.append(" ")
                     }
                     buffer.append(f)
-                    for (k in 1..gap2) {
+                    repeat(gap2) {
                         buffer.append(" ")
                     }
                 }
