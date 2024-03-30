@@ -124,10 +124,13 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                 }
                 // Update sibling after rotation
                 fixNode =
-                    if (node == node.parent!!.left) node.parent!!.right as Node.RBNode<K, V>? else node.parent!!.left as Node.RBNode<K, V>?
+                    if (node == node.parent!!.left) node.parent!!.right as Node.RBNode<K, V>?
+                    else node.parent!!.left as Node.RBNode<K, V>?
             } else {
                 // If the sibling is black
-                if (((sibling?.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK || sibling?.left == null) && ((sibling?.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK || sibling?.right == null)) {
+                if (((sibling?.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK || sibling?.left == null)
+                    && ((sibling?.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK || sibling?.right == null)
+                ) {
                     // If both children of sibling are black, recolor sibling and move fixNode to parent
                     sibling?.color = Node.RBNode.Color.RED
                     fixNode = node.parent as Node.RBNode<K, V>?
@@ -136,9 +139,10 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                         val parentNode = node.parent!! as Node.RBNode<K, V>
                         val isLeftChild = node == parentNode.left
 
-                        if ((isLeftChild && (sibling.right == null || (sibling.right as Node.RBNode<K, V>?)?.color== Node.RBNode.Color.BLACK)) ||
-                            (!isLeftChild && (sibling.left == null || (sibling.left as Node.RBNode<K, V>?)?.color==
-                                    Node.RBNode.Color.BLACK))) {
+                        if ((isLeftChild && (sibling.right == null || (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK))
+                            || (!isLeftChild && (sibling.left == null || (sibling.left as Node.RBNode<K, V>?)?.color ==
+                                    Node.RBNode.Color.BLACK))
+                        ) {
                             // If node is left child and sibling's right child is black or null,
                             // or if node is right child and sibling's left child is black or null,
                             // perform rotation and recoloring
@@ -147,21 +151,20 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                             sibling.color = Node.RBNode.Color.BLACK
                             if (isLeftChild) sibling.rightRotate() else sibling.leftRotate()
                             // Update sibling after rotation
-                            fixNode = if (isLeftChild) parentNode.right as Node.RBNode<K, V> else parentNode.left as Node.RBNode<K, V>
-                        } else if ((isLeftChild && ((sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED)) ||
-                            (!isLeftChild && ((sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED))) {
+                            fixNode =
+                                if (isLeftChild) parentNode.right as Node.RBNode<K, V> else parentNode.left as Node.RBNode<K, V>
+                        } else if ((isLeftChild && ((sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED))
+                            || (!isLeftChild && ((sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED))) {
                             // If node is left child and sibling's right child is red,
                             // or if node is right child and sibling's left child is red,
                             // perform rotation and additional checks for recoloring
                             if (isLeftChild) parentNode.leftRotate() else parentNode.rightRotate()
-                            if ((isLeftChild && (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED &&
-                                        (sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK &&
-                                        (sibling.right as Node.RBNode<K, V>?)?.right == null &&
-                                        sibling.right?.left == null) ||
-                                (!isLeftChild && (sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED &&
-                                        (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK && sibling
-                                            .left?.left == null &&
-                                        sibling.left?.right == null)) {
+                            if ((isLeftChild && (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED
+                                        && (sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK
+                                        && (sibling.right as Node.RBNode<K, V>?)?.right == null && sibling.right?.left == null)
+                                || (!isLeftChild && (sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED
+                                        && (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK
+                                        && sibling.left?.left == null && sibling.left?.right == null)) {
                                 val siblingChild = if (isLeftChild) sibling.right else sibling.left
                                 (siblingChild as Node.RBNode<K, V>?)?.color = Node.RBNode.Color.BLACK
                             }
@@ -230,7 +233,8 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
 
                 val siblingLeft = sibling?.left as Node.RBNode<K, V>?
                 val siblingRight = sibling?.right as Node.RBNode<K, V>?
-                if ((siblingLeft?.color == Node.RBNode.Color.BLACK || siblingLeft == null) && (siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null)) {
+                if ((siblingLeft?.color == Node.RBNode.Color.BLACK ||
+                            siblingLeft == null) && (siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null)) {
                     // Case 2: Both children of sibling are black
                     sibling?.color = Node.RBNode.Color.RED
                     fixNode = parentNode
@@ -262,7 +266,8 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
 
                 val siblingLeft = sibling?.left as Node.RBNode<K, V>?
                 val siblingRight = sibling?.right as Node.RBNode<K, V>?
-                if ((siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null) && (siblingLeft?.color == Node.RBNode.Color.BLACK || siblingLeft == null)) {
+                if ((siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null)
+                    && (siblingLeft?.color == Node.RBNode.Color.BLACK || siblingLeft == null)) {
                     // Case 2: Both children of sibling are black
                     sibling?.color = Node.RBNode.Color.RED
                     fixNode = parentNode
@@ -297,33 +302,8 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
         return if (root == null) null else (root as Node.RBNode<K, V>).min()
     }
 
-
-    fun toStringColoredWidth(): String {
-        return if (this.root == null) ""
-        else this.toStringColoredWidth(StringBuilder(), true, StringBuilder(), this.root!! as Node.RBNode<K, V>)
-            .toString()
-    }
-    private fun toStringColoredWidth(
-        prefix: StringBuilder, isTail: Boolean, buffer: StringBuilder, current: Node.RBNode<K, V>
-    ): StringBuilder {
-        if (current.right != null) {
-            var newPrefix = StringBuilder()
-            newPrefix.append(prefix)
-            newPrefix.append(if (isTail) "|   " else "    ")
-            this.toStringColoredWidth(newPrefix, false, buffer, current.right as Node.RBNode<K, V>)
-        }
-        buffer.append(prefix)
-        buffer.append(if (isTail) "└── " else "┌── ")
-        buffer.append("${current.key} (${current.color})")
-        buffer.append("\n")
-        if (current.left != null) {
-            var newPrefix = StringBuilder()
-            newPrefix.append(prefix)
-            newPrefix.append(if (!isTail) "|   " else "    ")
-            this.toStringColoredWidth(newPrefix, true, buffer, current.left as Node.RBNode<K, V>)
-        }
-
-        return buffer
+    fun setColored(value: Boolean) {
+        Node.RBNode.colored = value
     }
 
     private fun balanceRBTree(node: Node.RBNode<K, V>) {
