@@ -53,6 +53,22 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
             }
             return current
         }
+        val isOnLeft: Boolean
+            get() = this == parent?.left
+
+        fun sibling(): RBNode<K, V>? {
+
+            if (parent == null) return null
+
+            if (isOnLeft) return parent!!.right as RBNode<K, V>?
+
+            return parent!!.left as RBNode<K, V>?
+        }
+
+        fun hasRedChild(): Boolean {
+            return (left != null && (left as RBNode<K, V>).color == Color.RED) ||
+                    (right != null && (right as RBNode<K, V>).color == Color.RED)
+        }
     }
 
     class AVLNode<K : Comparable<K>, V>(
