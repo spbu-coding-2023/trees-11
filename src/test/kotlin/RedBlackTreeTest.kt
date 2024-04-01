@@ -7,9 +7,10 @@ class RedBlackTreeTest {
     private lateinit var tree: RBTree<Int, String>
 
     @BeforeEach
-    fun setup () {
+    fun setup() {
         tree = RBTree()
     }
+
     @Nested
     inner class AddTests {
         @Test
@@ -33,6 +34,27 @@ class RedBlackTreeTest {
             }
             tree.root?.let { tree.delete(it.key) }
             assert((tree.root as Node.RBNode?)?.color == Node.RBNode.Color.BLACK)
+        }
+
+        @Test
+        fun `should right rotate when add, then change root`() {
+            tree.add(85, "A")
+            tree.add(56, "B")
+            tree.add(27, "C")
+
+            val root = tree.root as Node.RBNode?
+            val left = root?.left as Node.RBNode?
+            val right = root?.right as Node.RBNode?
+
+            assert(
+                root != null
+                        && root.key == 56
+                        && root.color == Node.RBNode.Color.BLACK
+                        && left?.key == 27
+                        && left.color == Node.RBNode.Color.RED
+                        && right?.key == 85
+                        && right.color == Node.RBNode.Color.RED
+            )
         }
     }
 
@@ -65,6 +87,7 @@ class RedBlackTreeTest {
 
             assert(tree.root == null)
         }
+
         @Test
         fun `should merge second tree with empty tree`() {
             val secondTree = RBTree<Int, String>()
@@ -133,15 +156,15 @@ class RedBlackTreeTest {
         tree.add(2, "A")
         tree.add(3, "A")
 
-        tree.setColored( true )
+        tree.setColored(true)
         assert(tree.getNode(1)?.toString() == "\u001B[31m(1: A)\u001B[0m")
 
-        tree.setColored( false )
+        tree.setColored(false)
         assert(tree.getNode(1)?.toString() == "(1: A)")
     }
 
     @Nested
-    inner class BalanceTreeTests{
+    inner class BalanceTreeTests {
         @Test
         fun `balanceRBTree should return balanced tree`() {
             for (i in 1..10) {
@@ -272,6 +295,12 @@ class RedBlackTreeTest {
 
     }
 
+    /**
+     * WARNING:
+     *  because Red-Black tree is self-balancing, it balances the nodes automatically, that is why for the sake of
+     *  the test we need to set the color of the nodes manually. The cases are totally possible in the real world, I
+     *  set colors manually to make easier to understand the test cases.
+     */
     @Nested
     inner class DeleteNodeTests {
 
@@ -371,7 +400,7 @@ class RedBlackTreeTest {
         }
 
         @Test
-        fun `should delete black node with one red child` () {
+        fun `should delete black node with one red child`() {
             tree.add(1, "A")
             tree.add(2, "B")
             tree.add(3, "C")
@@ -392,11 +421,277 @@ class RedBlackTreeTest {
         }
 
         @Test
-        fun `should delete black node with one black child` () {
+        fun `should delete black node with one black child`() {
+            // scenario explanation on picture
+            // |       ┌── (6 Black)                     |       ┌── (6 Black)
+            // |   ┌── (5 Black)                         |   ┌── (5 Red)
+            // |   |   └── (4 Black)   ----------->      |   |   └── (4 Black)
+            // └── (3 Black)           (delete 2)        └── (3 Black)
+            //     └── (2 Black)                              └── (1 Black)
+            //         └── (1 Black)
+            tree.add(3, "C")
+            tree.add(2, "B")
+            tree.add(4, "D")
+            tree.add(1, "A")
+            tree.add(5, "E")
+            tree.add(6, "F")
 
+            (tree.getNode(1) as Node.RBNode<Int, String>?)?.color = Node.RBNode.Color.BLACK
+            (tree.getNode(4) as Node.RBNode<Int, String>?)?.color = Node.RBNode.Color.BLACK
+            (tree.getNode(6) as Node.RBNode<Int, String>?)?.color = Node.RBNode.Color.BLACK
+
+            tree.delete(2)
+
+            val root = tree.root as Node.RBNode?
+            val rootRight = root?.right as Node.RBNode?
+            val rootRightRight = rootRight?.right as Node.RBNode?
+            val rootRightLeft = rootRight?.left as Node.RBNode?
+            // check if the tree is balanced
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 3
+                        && root.left?.key == 1
+                        && root.right?.key == 5
+                        && rootRight?.color == Node.RBNode.Color.RED
+                        && rootRightLeft?.key == 4
+                        && rootRightLeft.color == Node.RBNode.Color.BLACK
+                        && rootRightRight?.key == 6
+                        && rootRightRight.color == Node.RBNode.Color.BLACK
+                        && tree.getNode(2) == null
+            )
         }
 
-    }
+        @Test
+        fun `should delete black node with 2 black children`() {
+            // scenario explanation on picture
+            // |       ┌── (6 Red)                       |         ┌── (6 Red)
+            // |   ┌── (5 Black)                         |    ┌── (5 Black)
+            // |   |   └── (4 Red)       ------------>   └── (4 Black)
+            // └── (3 Black)                                  └── (2 Black)
+            //     └── (2 Black)                                   └── (1 Red)
+            //         └── (1 Red)
 
+            tree.add(3, "C")
+            tree.add(2, "B")
+            tree.add(4, "D")
+            tree.add(1, "A")
+            tree.add(5, "E")
+            tree.add(6, "F")
+
+            tree.delete(3)
+
+            val root = tree.root as Node.RBNode?
+            val rootRight = root?.right as Node.RBNode?
+            val rootLeft = root?.left as Node.RBNode?
+            val rootLeftLeft = rootLeft?.left as Node.RBNode?
+            val rootRightRight = rootRight?.right as Node.RBNode?
+
+            // check if the tree is balanced
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 4
+                        && rootLeft?.key == 2
+                        && rootRight?.key == 5
+                        && rootRight.color == Node.RBNode.Color.BLACK
+                        && rootLeft.color == Node.RBNode.Color.BLACK
+                        && rootLeftLeft?.key == 1
+                        && rootLeftLeft.color == Node.RBNode.Color.RED
+                        && rootRightRight?.key == 6
+                        && rootRightRight.color == Node.RBNode.Color.RED
+                        && tree.getNode(3) == null
+            )
+        }
+
+        @Test
+        fun `should delete red node with 2 children and fixDoubleBlack sibling on left`() {
+            // scenario explanation on picture
+            // |       ┌── (93 Black)                           |       ┌── (93 Black)
+            // |   ┌── (90 Red)                                 |   ┌── (90 Red)
+            // |   |   |   ┌── (81 Red)                         |   |   |   ┌── (81 Red)
+            // |   |   └── (69 Black)                           |   |   └── (69 Black)
+            // |   |       └── (62 Red)                         |   |       └── (62 Red)
+            // └── (53 Black)                  ----------->     └── (53 Black)
+            //     |   ┌── (43 Black)           (delete 32)         |   ┌── (43 Black)
+            //     └── (32 Red)                                     └── (27 Red)
+            //         |   ┌── (27 Red)                                 └── (17 Black)
+            //         └── (17 Black)
+            val array = arrayOf(
+                32, 81, 17, 90, 93, 43, 27, 53, 69, 62
+            )
+
+            for (num in array) {
+                tree.add(num, "$num")
+            }
+            tree.delete(32)
+
+            val root = tree.root as Node.RBNode?
+            val rootLeft = root?.left as Node.RBNode?
+            val rootLeftLeft = rootLeft?.left as Node.RBNode?
+            val rootLeftRight = rootLeft?.right as Node.RBNode?
+
+            // check if the tree is balanced
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 53
+                        && rootLeft?.key == 27
+                        && rootLeft.color == Node.RBNode.Color.RED
+                        && rootLeftLeft?.key == 17
+                        && rootLeftLeft.color == Node.RBNode.Color.BLACK
+                        && rootLeftRight?.key == 43
+                        && rootLeftRight.color == Node.RBNode.Color.BLACK
+                        && tree.getNode(32) == null
+            )
+        }
+
+        @Test
+        fun `should delete black node with no children, and fixDoubleBlack sibling on left and sibling's left child is red`() {
+            // scenario explanation on picture
+            // |       ┌── (93 Black)                           |       ┌── (90 Black)
+            // |   ┌── (90 Red)                                 |       |   └── (81 Red)
+            // |   |   |   ┌── (81 Red)                         |   ┌── (69 Red)
+            // |   |   └── (69 Black)                           |   |   └── (62 Black)
+            // |   |       └── (62 Red)      ----------->       └── (53 Black)
+            // └── (53 Black)                 (delete 93)            |   ┌── (43 Black)
+            //     |   ┌── (43 Black)                                └── (27 Red)
+            //     └── (27 Red)                                          └── (17 Black)
+            //         └── (17 Black)
+            val array = arrayOf(
+                32, 81, 17, 90, 93, 43, 27, 53, 69, 62
+            )
+
+            for (num in array) {
+                tree.add(num, "$num")
+            }
+            tree.delete(32)
+            tree.delete(93)
+
+            val root = tree.root as Node.RBNode?
+            val rootRight = root?.right as Node.RBNode?
+            val rootRightLeft = rootRight?.left as Node.RBNode?
+            val rootRightRight = rootRight?.right as Node.RBNode?
+            val rootRightRightLeft = rootRightRight?.left as Node.RBNode?
+
+            // check if the tree is balanced
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 53
+                        && rootRight?.key == 69
+                        && rootRight.color == Node.RBNode.Color.RED
+                        && rootRightLeft?.key == 62
+                        && rootRightLeft.color == Node.RBNode.Color.BLACK
+                        && rootRightRight?.key == 90
+                        && rootRightRight.color == Node.RBNode.Color.BLACK
+                        && rootRightRightLeft?.key == 81
+                        && rootRightRightLeft.color == Node.RBNode.Color.RED
+                        && tree.getNode(93) == null
+            )
+        }
+
+        @Test
+        fun `should delete black node with no children, fixDoubleBlack sibling on right`() {
+            // scenario explanation on picture
+            // |       ┌── (93 Black)                       |       ┌── (93 Black)
+            // |   ┌── (84 Red)                             |   ┌── (84 Red)
+            // |   |   └── (71 Black)                       |   |   └── (71 Black)
+            // |   |       └── (68 Red)                     |   |       └── (68 Red)
+            // └── (60 Black)               ----------->    └── (60 Black)
+            //     |   ┌── (59 Black)        (delete 23)        |   ┌── (59 Black)
+            //     |   |   └── (49 Red)                         └── (49 Red)
+            //     └── (42 Red)                                      └── (42 Black)
+            //         └── (23 Black)
+            val array = arrayOf(
+                60, 84, 23, 71, 93, 59, 68, 42, 49
+            )
+            for (num in array) {
+                tree.add(num, "$num")
+            }
+            tree.delete(23)
+
+            val root = tree.root as Node.RBNode?
+            val rootRight = root?.right as Node.RBNode?
+            val rootLeft = root?.left as Node.RBNode?
+            val rootRightLeft = rootRight?.left as Node.RBNode?
+            val rootRightRight = rootRight?.right as Node.RBNode?
+            val rootRightLeftLeft = rootRightLeft?.left as Node.RBNode?
+            val rootLeftRight = rootLeft?.right as Node.RBNode?
+            val rootLeftLeft = rootLeft?.left as Node.RBNode?
+
+            // check if the tree is balanced
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 60
+                        && rootLeft?.key == 49
+                        && rootLeft.color == Node.RBNode.Color.RED
+                        && rootLeftLeft?.key == 42
+                        && rootLeftLeft.color == Node.RBNode.Color.BLACK
+                        && rootLeftRight?.key == 59
+                        && rootLeftRight.color == Node.RBNode.Color.BLACK
+                        && rootRight?.key == 84
+                        && rootRight.color == Node.RBNode.Color.RED
+                        && rootRightLeft?.key == 71
+                        && rootRightLeft.color == Node.RBNode.Color.BLACK
+                        && rootRightRight?.key == 93
+                        && rootRightRight.color == Node.RBNode.Color.BLACK
+                        && rootRightLeftLeft?.key == 68
+                        && rootRightLeftLeft.color == Node.RBNode.Color.RED
+                        && tree.getNode(23) == null
+            )
+        }
+
+        @Test
+        fun `should delete black node with 2 children, child's sibling - red, fixDoubleBlack sibling on right`() {
+            // scenario explanation on picture
+            // |           ┌── (88 Red)
+            // |       ┌── (78 Black)                         |       ┌── (88 Black)
+            // |   ┌── (69 Red)                               |   ┌── (78 Red)
+            // |   |   └── (45 Black)                         |   |   └── (69 Black)
+            // └── (28 Black)                 ----------->    └── (45 Black)
+            //     |   ┌── (21 Red)           (delete 28)         |   ┌── (21 Red)
+            //     └── (17 Black)                                 └── (17 Black)
+            //         └── (1 Red)                                    └── (1 Red)
+            val array = arrayOf(
+                21, 69, 28, 17, 42, 1, 78, 88, 45,
+            )
+            for (num in array) {
+                tree.add(num, "$num")
+            }
+            tree.delete(42)
+            tree.delete(28)
+
+            val root = tree.root as Node.RBNode?
+            val rootRight = root?.right as Node.RBNode?
+            val rootLeft = root?.left as Node.RBNode?
+            val rootRightLeft = rootRight?.left as Node.RBNode?
+            val rootRightRight = rootRight?.right as Node.RBNode?
+            val rootLeftRight = rootLeft?.right as Node.RBNode?
+            val rootLeftLeft = rootLeft?.left as Node.RBNode?
+
+            // check if the tree is balanced
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 45
+                        && rootLeft?.key == 17
+                        && rootLeft.color == Node.RBNode.Color.BLACK
+                        && rootLeftLeft?.key == 1
+                        && rootLeftLeft.color == Node.RBNode.Color.RED
+                        && rootLeftRight?.key == 21
+                        && rootLeftRight.color == Node.RBNode.Color.RED
+                        && rootRight?.key == 78
+                        && rootRight.color == Node.RBNode.Color.RED
+                        && rootRightLeft?.key == 69
+                        && rootRightLeft.color == Node.RBNode.Color.BLACK
+                        && rootRightRight?.key == 88
+                        && rootRightRight.color == Node.RBNode.Color.BLACK
+                        && tree.getNode(28) == null
+                        && tree.getNode(42) == null
+            )
+        }
+    }
 
 }
