@@ -1,7 +1,7 @@
 class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree<K, V, Node.RBNode<K, V>>(root) {
 
     override fun add(key: K, value: V) {
-        val node: Node<K, V, Node.RBNode<K, V>> = Node.RBNode(key, value)
+        val node: Node.RBNode<K, V> = Node.RBNode(key, value)
         this.addNode(node)
     }
 
@@ -27,272 +27,165 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
     override fun delete(key: K) {
         val node = this.getNode(key) as Node.RBNode<K, V>? ?: return
 
-        if (node.color == Node.RBNode.Color.RED) {
-            if (node.left == null && node.right == null) {
-                deleteRedNodeWithNoChildren(node)
-            } else if (node.left != null && node.right != null) {
-                deleteNodeWithTwoChildren(node)
-            }
-        } else {
-            if (node.left == null && node.right == null) {
-                deleteBlackNodeWithNoChildren(node)
-            } else if (node.left != null && node.right != null) {
-                deleteNodeWithTwoChildren(node)
-            } else {
-                deleteBlackNodeWithOneChild(node)
-            }
-        }
+        deleteNode(node)
     }
 
-    private fun deleteRedNodeWithNoChildren(node: Node.RBNode<K, V>) {
-        if (node == node.parent?.left) {
-            node.parent?.left = null
-        } else {
-            node.parent?.right = null
-        }
-    }
+    private fun deleteNode(nodeToDelete: Node.RBNode<K, V>) {
+        val replacementNode = BSTreplace(nodeToDelete)
 
-    private fun deleteNodeWithTwoChildren(node: Node.RBNode<K, V>) {
-        val successor = (node.right as Node.RBNode<K, V>).min()
-        val tmpValue = node.value
-        val tmpKey = node.key
-        node.key = successor.key
-        node.value = successor.value
-        successor.key = tmpKey
-        successor.value = tmpValue
-        if (successor.color == Node.RBNode.Color.RED) {
-            if (successor.left != null && successor.right != null) {
-                deleteNodeWithTwoChildren(successor)
+        // Determine if both 'replacementNode' and 'nodeToDelete' are black
+        val areBothBlack =
+            (replacementNode == null || replacementNode.color == Node.RBNode.Color.BLACK) && (nodeToDelete.color == Node.RBNode.Color.BLACK)
+
+        val parentNode = nodeToDelete.parent
+
+        // Case 1: 'nodeToDelete' has no replacement node
+        if (replacementNode == null) {
+            if (nodeToDelete == root) {
+                root = null
             } else {
-                if (successor.left != null || successor.right != null) {
-                    throw IllegalStateException("Successor should have two children or None")
+                if (areBothBlack) {
+                    // Both 'replacementNode' and 'nodeToDelete' are black, so fix double black at 'nodeToDelete'
+                    fixDoubleBlack(nodeToDelete)
+                } else if (nodeToDelete.sibling() != null) {
+                    nodeToDelete.sibling()!!.color = Node.RBNode.Color.RED
                 }
-                deleteRedNodeWithNoChildren(successor)
+                // Delete 'nodeToDelete' from the tree
+                if (nodeToDelete.isOnLeft) parentNode!!.left = null
+                else parentNode!!.right = null
             }
-        } else {
-            if (successor.left == null && successor.right == null) {
-                deleteBlackNodeWithNoChildren(successor)
-            } else if (successor.left != null && successor.right != null) {
-                deleteNodeWithTwoChildren(successor)
-            } else {
-                deleteBlackNodeWithOneChild(successor)
-            }
-        }
-
-//        if ((successor.parent as Node.RBNode<K, V>).color == Node.RBNode.Color.RED) {
-//            (successor.parent as Node.RBNode<K, V>).leftRotate()
-//        }
-    }
-
-    private fun deleteBlackNodeWithOneChild(node: Node.RBNode<K, V>) {
-        if (node.parent == null) {
-            root = node.left ?: node.right
-            (root as Node.RBNode<K, V>).color = Node.RBNode.Color.BLACK
             return
         }
-        val child = node.left as Node.RBNode<K, V>? ?: node.right as Node.RBNode<K, V>
-        val tmpValue = node.value
-        val tmpKey = node.key
-        node.key = child.key
-        node.value = child.value
-        child.key = tmpKey
-        child.value = tmpValue
 
-        if (child.color == Node.RBNode.Color.BLACK) {
-            deleteBlackNodeWithNoChildren(child)
-        } else {
-            deleteRedNodeWithNoChildren(child)
+        // Case 2: 'nodeToDelete' has only one child
+        if (nodeToDelete.left == null || nodeToDelete.right == null) {
+            if (nodeToDelete == root) {
+                // 'nodeToDelete' is the root, so assign the value of 'replacementNode' to 'nodeToDelete' and delete 'replacementNode'
+                nodeToDelete.key = replacementNode.key
+                nodeToDelete.right = null
+                nodeToDelete.left = nodeToDelete.right
+                // Delete 'replacementNode'
+            } else {
+                // Detach 'nodeToDelete' from the tree and move 'replacementNode' up
+                if (nodeToDelete.isOnLeft) parentNode!!.left = replacementNode
+                else parentNode!!.right = replacementNode
+
+                replacementNode.parent = parentNode
+
+                if (areBothBlack) {
+                    // Both 'replacementNode' and 'nodeToDelete' are black, so fix double black at 'replacementNode'
+                    fixDoubleBlack(replacementNode)
+                } else {
+                    // Either 'replacementNode' or 'nodeToDelete' is red, so color 'replacementNode' black
+                    replacementNode.color = Node.RBNode.Color.BLACK
+                }
+            }
+            return
         }
+
+        // Case 3: 'nodeToDelete' has two children, swap values with successor and recurse
+        swapValues(replacementNode, nodeToDelete)
+        deleteNode(replacementNode)
     }
 
-    private fun deleteBlackNodeWithNoChildren(node: Node.RBNode<K, V>) {
-        if (node.parent == null) {
-            // If the node is the root, set the root to null
-            root = null
-        } else {
-            var fixNode: Node.RBNode<K, V>? = null
-            var sibling =
-                if (node == node.parent!!.left) node.parent!!.right as Node.RBNode<K, V>? else node.parent!!.left as Node.RBNode<K, V>?
-            if (sibling?.color == Node.RBNode.Color.RED) {
-                // If the sibling is red, recolor and perform rotations
+    private fun swapValues(nodeA: Node.RBNode<K, V>, nodeB: Node.RBNode<K, V>) {
+        val tempKey = nodeA.key
+        val tempValue = nodeA.value
+
+        nodeA.key = nodeB.key
+        nodeA.value = nodeB.value
+
+        nodeB.key = tempKey
+        nodeB.value = tempValue
+    }
+
+    private fun fixDoubleBlack(doubleBlackNode: Node.RBNode<K, V>?) {
+        if (doubleBlackNode == null || doubleBlackNode == root) return
+
+        // Retrieve the sibling and parent of the double black node
+        val sibling = doubleBlackNode.sibling()
+        val parent = doubleBlackNode.parent as Node.RBNode<K, V>?
+
+        // If there is no sibling, the double black is pushed up to its parent
+        if (sibling == null) fixDoubleBlack(parent)
+        else {
+            if (parent == null) return
+            if (sibling.color == Node.RBNode.Color.RED) {
+                // If the sibling is red, perform rotation and color changes
+                parent.color = Node.RBNode.Color.RED
                 sibling.color = Node.RBNode.Color.BLACK
-                (node.parent as Node.RBNode<K, V>).color = Node.RBNode.Color.RED
-                if (node == node.parent!!.left) {
-                    (node.parent as Node.RBNode<K, V>).leftRotate()
-                } else {
-                    (node.parent as Node.RBNode<K, V>).rightRotate()
-                }
-                // Update sibling after rotation
-                fixNode =
-                    if (node == node.parent!!.left) node.parent!!.right as Node.RBNode<K, V>?
-                    else node.parent!!.left as Node.RBNode<K, V>?
+
+                if (sibling.isOnLeft) parent.rightRotate() // Right case
+                else parent.leftRotate() // Left case
+
+                fixDoubleBlack(doubleBlackNode) // Recursively fix double black
             } else {
                 // If the sibling is black
-                if (((sibling?.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK || sibling?.left == null)
-                    && ((sibling?.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK || sibling?.right == null)
-                ) {
-                    // If both children of sibling are black, recolor sibling and move fixNode to parent
-                    sibling?.color = Node.RBNode.Color.RED
-                    fixNode = node.parent as Node.RBNode<K, V>?
-                } else {
-                    if (node.parent != null) {
-                        val parentNode = node.parent!! as Node.RBNode<K, V>
-                        val isLeftChild = node == parentNode.left
-
-                        if ((isLeftChild && (sibling.right == null || (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK))
-                            || (!isLeftChild && (sibling.left == null || (sibling.left as Node.RBNode<K, V>?)?.color ==
-                                    Node.RBNode.Color.BLACK))
-                        ) {
-                            // If node is left child and sibling's right child is black or null,
-                            // or if node is right child and sibling's left child is black or null,
-                            // perform rotation and recoloring
-                            val siblingChild = if (isLeftChild) sibling.left else sibling.right
-                            (siblingChild as Node.RBNode<K, V>?)?.color = Node.RBNode.Color.BLACK
-                            sibling.color = Node.RBNode.Color.BLACK
-                            if (isLeftChild) sibling.rightRotate() else sibling.leftRotate()
-                            // Update sibling after rotation
-                            fixNode =
-                                if (isLeftChild) parentNode.right as Node.RBNode<K, V> else parentNode.left as Node.RBNode<K, V>
-                        } else if ((isLeftChild && ((sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED))
-                            || (!isLeftChild && ((sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED))) {
-                            // If node is left child and sibling's right child is red,
-                            // or if node is right child and sibling's left child is red,
-                            // perform rotation and additional checks for recoloring
-                            if (isLeftChild) parentNode.leftRotate() else parentNode.rightRotate()
-                            if ((isLeftChild && (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED
-                                        && (sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK
-                                        && (sibling.right as Node.RBNode<K, V>?)?.right == null && sibling.right?.left == null)
-                                || (!isLeftChild && (sibling.left as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.RED
-                                        && (sibling.right as Node.RBNode<K, V>?)?.color == Node.RBNode.Color.BLACK
-                                        && sibling.left?.left == null && sibling.left?.right == null)) {
-                                val siblingChild = if (isLeftChild) sibling.right else sibling.left
-                                (siblingChild as Node.RBNode<K, V>?)?.color = Node.RBNode.Color.BLACK
-                            }
-                        }
-                    }
-                    // sometimes it helps to balance the tree, else it does nothing
-                    balanceRBTree(node)
-                    // Perform additional fix-up operations if needed
-                    if (fixNode != null) {
-                        if (fixNode == fixNode.parent!!.left) {
-                            (fixNode.parent as Node.RBNode<K, V>).leftRotate()
+                if (sibling.hasRedChild()) {
+                    // If at least one child of the sibling is red
+                    val siblingLeft = sibling.left as Node.RBNode<K, V>?
+                    val siblingRight = sibling.right as Node.RBNode<K, V>?
+                    if (sibling.isOnLeft) {
+                        // Left subtree of the sibling
+                        if (siblingLeft?.color == Node.RBNode.Color.RED) {
+                            // Left-left case
+                            siblingLeft.color = sibling.color
+                            sibling.color = parent.color
+                            parent.rightRotate()
                         } else {
-                            (fixNode.parent as Node.RBNode<K, V>).rightRotate()
+                            // Left-right case
+                            siblingRight?.color = parent.color
+                            sibling.leftRotate()
+                            parent.rightRotate()
                         }
-                        fixNode.color = (fixNode.parent as Node.RBNode<K, V>).color
-                        (fixNode.parent as Node.RBNode<K, V>).color = Node.RBNode.Color.BLACK
+                    } else {
+                        // Right subtree of the sibling
+                        if (siblingRight?.color == Node.RBNode.Color.RED) {
+                            // Right-right case
+                            siblingRight.color = sibling.color
+                            sibling.color = parent.color
+                            parent.leftRotate()
+                        } else {
+                            // Right-left case
+                            siblingLeft?.color = parent.color
+                            sibling.rightRotate()
+                            parent.leftRotate()
+                        }
                     }
+                    parent.color = Node.RBNode.Color.BLACK
+                } else {
+                    // If both children of the sibling are black
+                    sibling.color = Node.RBNode.Color.RED
+                    if (parent.color == Node.RBNode.Color.BLACK) fixDoubleBlack(parent)
+                    else parent.color = Node.RBNode.Color.BLACK
                 }
-            }
-            // Transplant node with null and fix deletion
-            transplant(node, null)
-            if (fixNode != null) {
-                fixDeletion(fixNode)
             }
         }
     }
 
-    private fun transplant(u: Node.RBNode<K, V>?, v: Node.RBNode<K, V>?) {
-        if (u?.parent == null) {
-            // If u is the root, set v as the new root
-            root = v
-        } else if (u == u.parent?.left) {
-            // If u is the left child of its parent, set v as the new left child
-            u.parent?.left = v
+    private fun successor(x: Node.RBNode<K, V>): Node.RBNode<K, V> {
+        var temp = x
+        while (temp.left != null) temp = temp.left as Node.RBNode<K, V>
+        return temp
+    }
+
+    // find node that replaces a deleted node in BST
+    private fun BSTreplace(node: Node.RBNode<K, V>): Node.RBNode<K, V>? {
+        // If the node has two children
+        if (node.left != null && node.right != null) {
+            return successor(node.right as Node.RBNode<K, V>)
+        }
+
+        if (node.left == null && node.right == null) {
+            return null // There is no replacement
+        }
+
+        return if (node.left != null) {
+            node.left as Node.RBNode<K, V>?
         } else {
-            // Otherwise, u is the right child of its parent, set v as the new right child
-            u.parent?.right = v
+            node.right as Node.RBNode<K, V>?
         }
-        // Update v's parent to be u's parent
-        v?.parent = u?.parent
     }
-
-    private fun fixDeletion(node: Node.RBNode<K, V>?) {
-        var fixNode = node
-
-        while (fixNode != null && fixNode != root && fixNode.color == Node.RBNode.Color.BLACK) {
-            val parentNode = fixNode.parent as Node.RBNode<K, V>? ?: break
-            val isLeftChild = fixNode == parentNode.left
-            var sibling =
-                if (isLeftChild) parentNode.right as Node.RBNode<K, V>? else parentNode.left as Node.RBNode<K, V>?
-
-            if (sibling == null) {
-                // No sibling, continue fixup from parent
-                fixNode.color = Node.RBNode.Color.RED
-
-            }
-            if (fixNode == parentNode.left) {
-
-                if (sibling?.color == Node.RBNode.Color.RED) {
-                    // Case 1: Sibling is red
-                    sibling.color = Node.RBNode.Color.BLACK
-                    parentNode.color = Node.RBNode.Color.RED
-                    parentNode.leftRotate()
-                    sibling = parentNode.right as Node.RBNode<K, V>?
-                }
-
-                val siblingLeft = sibling?.left as Node.RBNode<K, V>?
-                val siblingRight = sibling?.right as Node.RBNode<K, V>?
-                if ((siblingLeft?.color == Node.RBNode.Color.BLACK ||
-                            siblingLeft == null) && (siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null)) {
-                    // Case 2: Both children of sibling are black
-                    sibling?.color = Node.RBNode.Color.RED
-                    fixNode = parentNode
-                } else {
-                    if ((siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null)) {
-                        // Case 3: Left child of sibling is red
-                        siblingLeft?.color = Node.RBNode.Color.BLACK
-                        sibling?.color = Node.RBNode.Color.RED
-                        sibling?.rightRotate()
-                        sibling = parentNode.right as Node.RBNode<K, V>?
-                    }
-
-                    // Case 4: Right child of sibling is red
-                    sibling?.color = parentNode.color
-                    parentNode.color = Node.RBNode.Color.BLACK
-                    siblingRight?.color = Node.RBNode.Color.BLACK
-                    parentNode.leftRotate()
-                    fixNode = root as Node.RBNode<K, V>?
-                }
-            } else {
-
-                if (sibling?.color == Node.RBNode.Color.RED) {
-                    // Case 1: Sibling is red
-                    sibling.color = Node.RBNode.Color.BLACK
-                    parentNode.color = Node.RBNode.Color.RED
-                    parentNode.rightRotate()
-                    sibling = parentNode.left as Node.RBNode<K, V>?
-                }
-
-                val siblingLeft = sibling?.left as Node.RBNode<K, V>?
-                val siblingRight = sibling?.right as Node.RBNode<K, V>?
-                if ((siblingRight?.color == Node.RBNode.Color.BLACK || siblingRight == null)
-                    && (siblingLeft?.color == Node.RBNode.Color.BLACK || siblingLeft == null)) {
-                    // Case 2: Both children of sibling are black
-                    sibling?.color = Node.RBNode.Color.RED
-                    fixNode = parentNode
-                } else {
-                    if ((siblingLeft?.color == Node.RBNode.Color.BLACK || siblingLeft == null)) {
-                        // Case 3: Right child of sibling is red
-                        siblingRight?.color = Node.RBNode.Color.BLACK
-                        sibling?.color = Node.RBNode.Color.RED
-                        sibling?.leftRotate()
-                        sibling = parentNode.left as Node.RBNode<K, V>?
-                    }
-
-                    // Case 4: Left child of sibling is red
-                    sibling?.color = parentNode.color
-                    parentNode.color = Node.RBNode.Color.BLACK
-                    siblingLeft?.color = Node.RBNode.Color.BLACK
-                    parentNode.rightRotate()
-                    fixNode = root as Node.RBNode<K, V>?
-                }
-            }
-        }
-
-        fixNode?.color = Node.RBNode.Color.BLACK
-    }
-
 
     override fun max(): Node.RBNode<K, V>? {
         return if (root == null) null else (root as Node.RBNode<K, V>).max()
