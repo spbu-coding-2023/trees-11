@@ -272,4 +272,131 @@ class RedBlackTreeTest {
 
     }
 
+    @Nested
+    inner class DeleteNodeTests {
+
+        @Test
+        fun `should not find node and return`() {
+            tree.add(1, "A")
+            tree.add(2, "B")
+            tree.add(3, "C")
+
+            tree.delete(4)
+
+            assert(tree.getNode(1) != null)
+            assert(tree.getNode(2) != null)
+            assert(tree.getNode(3) != null)
+        }
+
+        @Test
+        fun `should delete root with no children`() {
+            tree.add(1, "A")
+
+            tree.delete(1)
+
+            assert(tree.root == null)
+        }
+
+        @Test
+        fun `should delete right red node with no children`() {
+            tree.add(1, "A")
+            tree.add(2, "B")
+
+            tree.delete(2)
+            val root = tree.root as Node.RBNode?
+
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 1
+                        && root.left == null
+                        && root.right == null
+                        && tree.getNode(2) == null
+            )
+        }
+
+        @Test
+        fun `should delete left red node with no children`() {
+            tree.add(2, "B")
+            tree.add(1, "A")
+
+            tree.delete(1)
+            val root = tree.root as Node.RBNode?
+
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 2
+                        && root.left == null
+                        && root.right == null
+                        && tree.getNode(1) == null
+            )
+        }
+
+        @Test
+        fun `should delete root with one child`() {
+            tree.add(1, "A")
+            tree.add(2, "B")
+
+            tree.delete(1)
+            val root = tree.root as Node.RBNode?
+
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 2
+                        && root.left == null
+                        && root.right == null
+                        && tree.getNode(1) == null
+            )
+        }
+
+        @Test
+        fun `should delete node with 2 children and red successor`() {
+            tree.add(1, "A")
+            tree.add(2, "B")
+            tree.add(3, "C")
+
+            tree.delete(2)
+            val root = tree.root as Node.RBNode?
+
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 3
+                        && root.right == null
+                        && root.left?.key == 1
+                        && tree.getNode(2) == null
+            )
+        }
+
+        @Test
+        fun `should delete black node with one red child` () {
+            tree.add(1, "A")
+            tree.add(2, "B")
+            tree.add(3, "C")
+            tree.add(4, "D")
+
+            tree.delete(3)
+
+            val root = tree.root as Node.RBNode?
+
+            assert(
+                root != null
+                        && root.color == Node.RBNode.Color.BLACK
+                        && root.key == 2
+                        && root.left?.key == 1
+                        && root.right?.key == 4
+                        && tree.getNode(3) == null
+            )
+        }
+
+        @Test
+        fun `should delete black node with one black child` () {
+
+        }
+
+    }
+
+
 }
