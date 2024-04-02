@@ -144,7 +144,7 @@ class RBNodeTest {
         tree.add(2, "B")
         tree.add(3, "C")
 
-        // because Red-Black tree is self-balancing, it balances the nodes automatically, that is wht for the sake of
+        // because Red-Black tree is self-balancing, it balances the nodes automatically, that is why for the sake of
         // the test we need to set the color of the nodes to black manually
         tree.getNode(1)?.let { (it as Node.RBNode<Int, String>).color = Node.RBNode.Color.BLACK }
         tree.getNode(3)?.let { (it as Node.RBNode<Int, String>).color = Node.RBNode.Color.BLACK }
