@@ -407,7 +407,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return buffer
     }
 
-    fun toStringBeautifulHeight(ofSide: Int = 4): String {
+    open fun toStringBeautifulHeight(ofSide: Int = 4): String {
         if (this.root == null) return ""
         else {
             val buffer: StringBuilder = StringBuilder()
