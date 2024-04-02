@@ -355,11 +355,18 @@ redBlackTree.setColored(true)
     redBlackTree.add(1, "A")
     redBlackTree.add(2, "B")
     redBlackTree.add(3, "C")
+    redBlackTree.add(4, "D")
+    redBlackTree.add(5, "E")
 
     println(redBlackTree.toString())
     println(redBlackTree.toString(mode = Tree.TreeStringMode.WIDTH))
     println(redBlackTree.toString(mode = Tree.TreeStringMode.HEIGHT))
 ```
+
+#### Вывод:
+
+<img src="trees_output.jpg" alt="Alt text" style="height: 350px;">
+
 </details>
 
 <!-- LICENSE -->
