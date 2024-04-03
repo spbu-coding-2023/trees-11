@@ -1,12 +1,140 @@
 class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tree<K, V, Node.AVLNode<K, V>>(root) {
 
-    override fun add(key: K, value: V){
-        val node : Node.AVLNode<K, V> = Node.AVLNode(key, value)
-        this.addNode(node)
+    override fun add(key: K, value: V) {
+        this.root = insert(this.root as Node.AVLNode<K, V>?, key, value)
     }
-    override fun addNode(node : Node<K, V, Node.AVLNode<K, V>>){
-        super.addNode(node)
-        balanceAVLTree(node as Node.AVLNode<K, V>)
+
+    private fun height(node: Node.AVLNode<K, V>?): Int {
+        if (node == null) return 0
+
+        return node.height
+    }
+
+    private fun max(a: Int, b: Int): Int {
+        return if ((a > b)) a else b
+    }
+
+    private fun getBalance(node: Node.AVLNode<K, V>?): Int {
+        if (node == null) return 0
+
+        return height(node.left as Node.AVLNode<K, V>?) - height(node.right as Node.AVLNode<K, V>?)
+    }
+
+    private fun insert(node: Node.AVLNode<K, V>?, key: K, value: V): Node.AVLNode<K, V>? {
+
+        if (node == null) return Node.AVLNode(key, value)
+
+        if (key < node.key) node.left = insert(node.left as Node.AVLNode<K, V>?, key, value)
+        else if (key > node.key) node.right = insert(node.right as Node.AVLNode<K, V>?, key, value)
+        else return node
+
+        node.height = 1 + max(height(node.left as Node.AVLNode<K, V>?), height(node.right as Node.AVLNode<K, V>?))
+
+        val balance = getBalance(node)
+
+        if (balance > 1 && key < node.left!!.key) return rightRotate(node)
+
+        if (balance < -1 && key > node.right!!.key) return leftRotate(node)
+
+        if (balance > 1 && key > node.left!!.key) {
+            node.left = leftRotate(node.left as Node.AVLNode<K, V>?)
+            return rightRotate(node)
+        }
+
+        if (balance < -1 && key < node.right!!.key) {
+            node.right = rightRotate(node.right as Node.AVLNode<K, V>?)
+            return leftRotate(node)
+        }
+
+        return node
+    }
+
+    private fun deleteNode(node: Node.AVLNode<K, V>?, key: K): Node.AVLNode<K, V>? {
+        var root = node
+        if (root == null) return null
+
+        if (key < root.key) root.left = deleteNode(root.left as Node.AVLNode<K, V>?, key)
+        else if (key > root.key) root.right = deleteNode(root.right as Node.AVLNode<K, V>?, key)
+        else {
+            if ((root.left == null) || (root.right == null)) {
+                var temp: Node.AVLNode<K, V>? = null
+                temp = if (temp === root.left) root.right as Node.AVLNode<K, V>?
+                else root.left as Node.AVLNode<K, V>?
+
+                if (temp == null) {
+                    temp = root
+                    root = null
+                } else root = temp
+
+            } else {
+                val temp = minValueNode(root.right as Node.AVLNode<K, V>?)
+
+                root.key = temp!!.key
+
+                root.right = deleteNode(root.right as Node.AVLNode<K, V>?, temp.key)
+            }
+        }
+
+        if (root == null) return root
+
+        (root as Node.AVLNode<K, V>?)?.height =
+            max(height(root.left as Node.AVLNode<K, V>?), height(root.right as Node.AVLNode<K, V>?)) + 1
+
+        val balance = getBalance(root)
+
+        if (balance > 1 && getBalance(root.left as Node.AVLNode<K, V>?) >= 0) return rightRotate(root)
+
+        if (balance > 1 && getBalance(root.left as Node.AVLNode<K, V>?) < 0) {
+            root.left = leftRotate(root.left as Node.AVLNode<K, V>?)
+            return rightRotate(root)
+        }
+
+        if (balance < -1 && getBalance(root.right as Node.AVLNode<K, V>?) <= 0) return leftRotate(root)
+
+        if (balance < -1 && getBalance(root.right as Node.AVLNode<K, V>?) > 0) {
+            root.right = rightRotate(root.right as Node.AVLNode<K, V>?)
+            return leftRotate(root)
+        }
+
+        return root
+    }
+
+    private fun minValueNode(node: Node.AVLNode<K, V>?): Node.AVLNode<K, V>? {
+        var current = node
+
+        /* loop down to find the leftmost leaf */
+        while (current!!.left != null) current = current.left as Node.AVLNode<K, V>?
+
+        return current
+    }
+
+    private fun rightRotate(node: Node.AVLNode<K, V>?): Node.AVLNode<K, V> {
+        val x = node!!.left as Node.AVLNode<K, V>?
+        val T2 = x!!.right as Node.AVLNode<K, V>?
+
+        // Perform rotation
+        x.right = node
+        node.left = T2
+
+        // Update heights
+        node.height = max(height(node.left as Node.AVLNode<K, V>?), height(node.right as Node.AVLNode<K, V>?)) + 1
+        x.height = max(height(x.left as Node.AVLNode<K, V>?), height(x.right as Node.AVLNode<K, V>?)) + 1
+
+        // Return new root
+        return x
+    }
+
+    private fun leftRotate(node: Node.AVLNode<K, V>?): Node.AVLNode<K, V>? {
+        val y = node!!.right as Node.AVLNode<K, V>?
+        val T2 = y!!.left as Node.AVLNode<K, V>?
+
+        y.left = node
+        node.right = T2
+
+        node.height = max(height(node.left as Node.AVLNode<K, V>?), height(node.right as Node.AVLNode<K, V>?)) + 1
+        y.height = max(height(y.left as Node.AVLNode<K, V>?), height(y.right as Node.AVLNode<K, V>?)) + 1
+
+        return y
     }
 
     override fun merge(tree: Tree<K, V, Node.AVLNode<K, V>>) {
@@ -31,170 +159,8 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
         return if (root == null) null else (root as Node.AVLNode<K, V>).min()
     }
 
-    override fun delete(key : K){
+    override fun delete(key: K) {
         val node = this.getNode(key) as Node.AVLNode<K, V>? ?: return
         deleteNode(node, key)
     }
-
-    private fun deleteNode(node : Node.AVLNode<K, V>?, key : K) : Node.AVLNode<K, V>? {
-        if (node == null) return node;
-        if (key < node.key){
-            node.left = deleteNode(node.left as Node.AVLNode<K, V>, key)
-        }
-        else if (key > node.key){
-            node.right = deleteNode(node.right as Node.AVLNode<K, V>, key)
-        }
-        else{
-           if (node.left == null || node.right == null){
-               var tmp : Node.AVLNode<K, V>? = null
-               tmp = node.left as Node.AVLNode<K, V> ?: node.right as Node.AVLNode<K, V>
-               if (tmp == null){
-                   tmp = node
-                   node = null
-               } else {
-                   node = tmp
-               }
-           }
-            else {
-               val tmp = findMin(node.right as Node.AVLNode<K, V>)
-               node.key = tmp.key
-               node.right = deleteNode(node.right as Node.AVLNode<K, V>, tmp.key)
-            }
-        }
-        if (node == null) return node
-        fixHeight(node)
-        val balance = balanceFactor(node)
-        if (balance > 1){
-            if (balanceFactor(node.left as Node.AVLNode<K, V>) >= 0){
-                return rightRotate(node)
-            } else {
-                node.left = leftRotate(node.left as Node.AVLNode<K, V>)
-                return rightRotate(node)
-            }
-        }
-        if (balance < -1){
-            if (balanceFactor(node.right as Node.AVLNode<K, V>) <= 0){
-                return leftRotate(node)
-            } else {
-                node.right = rightRotate(node.right as Node.AVLNode<K, V>)
-                return leftRotate(node)
-            }
-        }
-        return node
-    }
-
-    private fun findMin(node : Node.AVLNode<K, V>) : Node.AVLNode<K, V>{
-        return if (node.left != null) findMin(node.left as Node.AVLNode<K, V>) else node
-    }
-
-    private fun removeMin(node : Node.AVLNode<K, V>) : Node.AVLNode<K, V>{
-        if (node.left == null){
-            return node.right as Node.AVLNode<K, V>
-        }
-        node.left = removeMin(node.left as Node.AVLNode<K, V>)
-        return balanceAVLTree(node)
-    }
-
-    private fun balanceAVLTree(node : Node.AVLNode<K, V>) : Node.AVLNode<K, V>{
-        fixHeight(node)
-        if (balanceFactor(node) == 2){
-            if (balanceFactor(node.right as Node.AVLNode<K, V>?) < 0){
-                node.right = rightRotate(node.right as Node.AVLNode<K, V>);
-            }
-            return leftRotate(node);
-        }
-        if (balanceFactor(node) == -2){
-            if (balanceFactor(node.left as Node.AVLNode<K, V>?) > 0){
-                node.left = leftRotate(node.left as Node.AVLNode<K, V>)
-            }
-            return rightRotate(node)
-        }
-        return node;
-    }
-
-    private fun fixHeight(node : Node.AVLNode<K, V>?) {
-        node?.height = 1 + maxOf(height(node?.left as Node.AVLNode<K, V>?), height(node?.right as Node.AVLNode<K, V>?))
-    }
-
-    private fun height(node : Node.AVLNode<K, V>?) : Int{
-        return node?.height ?: 0
-    }
-
-    private fun balanceFactor(node : Node.AVLNode<K, V>?) : Int{
-        if (node == null) return 0;
-        return (height(node.right as Node.AVLNode<K, V>?) - height(node.left as Node.AVLNode<K, V>?));
-    }
-
-    private fun leftRotate(a : Node.AVLNode<K, V>) : Node.AVLNode<K, V>{
-       if (a.height != 2) return a;
-       val b : Node.AVLNode<K,V> = a.right as Node.AVLNode<K, V>;
-       if (b.height == -1) return a;
-
-       a.right = b.left;
-       if (b.left != null) b.left!!.parent = a;
-
-       b.parent = a.parent
-       if(a.parent != null){
-           if (a.parent!!.left == a){
-               a.parent!!.left = b;
-           }
-           else{
-               a.parent!!.right = b;
-           }
-       }
-       else{
-           root = b
-       }
-
-       b.left = a;
-       a.parent = b;
-
-       if (b.height == 1){
-           a.height = 0
-           b.height = 0
-       }
-       else{
-           a.height = 1
-           b.height = -1
-       }
-       return b;
-   }
-
-    private fun rightRotate(b : Node.AVLNode<K, V>) : Node.AVLNode<K, V>{
-        if (b.height != -2) return b;
-        val a : Node.AVLNode<K,V> = b.left as Node.AVLNode<K, V>;
-        if (a.height == -1) return b;
-
-        b.left = a.right;
-        if (a.right != null) a.right!!.parent = b;
-
-        a.parent = b.parent
-        if(b.parent != null){
-            if (b.parent!!.left == b){
-                b.parent!!.left = a;
-            }
-            else{
-                b.parent!!.right = a;
-            }
-        }
-        else{
-            root = a
-        }
-
-        a.right = b;
-        b.parent = a;
-
-        if (a.height == -1){
-            a.height = 0
-            b.height = 0
-        }
-        else{
-            a.height = 1
-            b.height = -1
-        }
-        return a;
-    }
 }
-
-
-

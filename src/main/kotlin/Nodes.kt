@@ -77,8 +77,32 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
         left: AVLNode<K, V>? = null,
         right: AVLNode<K, V>? = null,
         parent: AVLNode<K, V>? = null,
-        var height: Int = 0
-    ) : Node<K, V, AVLNode<K, V>>(key, value, left, right, parent)
+        var height: Int = 1
+    ) : Node<K, V, AVLNode<K, V>>(key, value, left, right, parent) {
+
+        /*override fun toString(): String {
+            val rightHeight = if (right != null) (right as AVLNode<K, V>).height else 0
+            val leftHeight = if (left != null) (left as AVLNode<K, V>).height else 0
+            val balance = leftHeight - rightHeight
+            return "($key: $balance)"
+        }*/
+        fun max(): AVLNode<K, V> {
+            var current = this
+            while (current.right != null) {
+                current = current.right as AVLNode<K, V>
+            }
+            return current
+        }
+
+        fun min(): AVLNode<K, V> {
+            var current = this
+            while (current.left != null) {
+                current = current.left as AVLNode<K, V>
+            }
+            return current
+        }
+
+    }
 
     override fun toString(): String {
         return "($key: $value)"
