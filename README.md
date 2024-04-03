@@ -29,19 +29,6 @@
 
 [//]: # (## Usage)
 
-<!-- LICENSE -->
-
-## Лицензия
-
-Распространяется по лицензии MIT. См. файл `LICENSE.txt` для получения дополнительной информации.
-
-## Авторы
-
-- [AlexandrKudrya](https://github.com/AlexandrKudrya)
-- [7gambit7](https://github.com/7gambit7)
-- [VersusXX](https://github.com/VersusXX)
-
-
 ## Как пользоватся
 
 ### Инициализация
@@ -61,6 +48,8 @@ binaryTree.add(2, "B")
 binaryTree.add(3, "C")
 
 println(binaryTree)
+
+// output: [(1: "A"), (2: "B"), (3, "C")]
 ```
 
 #### Поиск
@@ -221,26 +210,33 @@ binaryTree.iterateBFS().forEach {
 
   ```kotlin
   val binaryTree = BinaryTree<Int, String>()
+val keys = arrayOf(3, 2, 1, 0, 4, 5)
 
-binaryTree.add(2, "B")
-binaryTree.add(1, "A")
-binaryTree.add(3, "C")
+keys.forEach { binaryTree.add(it, it.toString()) }
 
-binaryTree.iterateDFS().forEach {
-    println(it.key)
-}
-
-  println(binaryTree.toString())
+// Стандартно iterateDFS работает с mode=Tree.ModeDFS.PREORDER
+println("PREORDER: ")
+binaryTree.iterateDFS().forEach { print(it.key.toString() + " ") }
+println("INORDER: ")
+binaryTree.iterateDFS(mode=Tree.ModeDFS.INORDER).forEach { print(it.key.toString() + " ") }
+println("POSTORDER: ")
+binaryTree.iterateDFS(mode=Tree.ModeDFS.POSTORDER).forEach { print(it.key.toString() + " ") }
   ```
 #### Вывод
   ```text
-2
-1
-3
+PREORDER: 3 2 1 0 4 5 
+INORDER: 0 1 2 3 4 5 
+POSTORDER: 0 1 2 5 4 3 
   ```
 </details>
 
+О методах обхода в глубину — [Tree traversal](https://en.wikipedia.org/wiki/Tree_traversal)
+
 #### Соединение двух деревьев
+
+Операция соединения двух деверьев доступна, только при условии, что их ключи сравнимы и все ключи основного дерева
+меньше всех ключей присоединяемого дерева.
+
 ```kotlin
 val binaryTree = BinaryTree<Int, String>()
 val secondBinaryTree = BinaryTree<Int, String>()
@@ -359,12 +355,31 @@ redBlackTree.setColored(true)
     redBlackTree.add(1, "A")
     redBlackTree.add(2, "B")
     redBlackTree.add(3, "C")
+    redBlackTree.add(4, "D")
+    redBlackTree.add(5, "E")
 
     println(redBlackTree.toString())
     println(redBlackTree.toString(mode = Tree.TreeStringMode.WIDTH))
     println(redBlackTree.toString(mode = Tree.TreeStringMode.HEIGHT))
 ```
+
+#### Вывод:
+
+<img src="trees_output.jpg" alt="Alt text" style="height: 350px;">
+
 </details>
+
+<!-- LICENSE -->
+
+## Лицензия
+
+Распространяется по лицензии MIT. См. файл `LICENSE.txt` для получения дополнительной информации.
+
+## Авторы
+
+- [AlexandrKudrya](https://github.com/AlexandrKudrya)
+- [7gambit7](https://github.com/7gambit7)
+- [VersusXX](https://github.com/VersusXX)
 
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge:
 [license-url]: https://github.com/spbu-coding-2023/trees-11/blob/main/LICENSE.txt

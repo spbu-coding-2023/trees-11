@@ -1,3 +1,6 @@
+import kotlin.math.ceil
+import kotlin.math.floor
+
 class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree<K, V, Node.RBNode<K, V>>(root) {
 
     override fun add(key: K, value: V) {
@@ -246,6 +249,120 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                     (parentNode.left as Node.RBNode<K, V>?)?.color = Node.RBNode.Color.RED
                 }
             }
+        }
+    }
+
+    override fun toStringBeautifulHeight(ofSide: Int): String {
+        if (this.root == null) return ""
+        else {
+            val buffer: StringBuilder = StringBuilder()
+
+            val lines: MutableList<MutableList<String?>> = mutableListOf()
+
+            var level: MutableList<Node.RBNode<K, V>?> = mutableListOf()
+            var next: MutableList<Node.RBNode<K, V>?> = mutableListOf()
+
+            level.add(this.root as Node.RBNode<K, V>?)
+
+            var nodeNumber = 1
+            var widtest = 0
+
+            while (nodeNumber != 0) {
+                val line: MutableList<String?> = mutableListOf()
+
+                nodeNumber = 0
+
+                for (node in level) {
+                    if (node == null) {
+                        line.add(null)
+
+                        next.add(null)
+                        next.add(null)
+                    } else {
+                        val strNode: String = node.toString()
+                        line.addLast(strNode)
+
+                        val extra = if (node.color == Node.RBNode.Color.RED) 18 else 0
+
+                        if (strNode.length > widtest + extra) widtest = strNode.length
+
+                        next.add(node.left as Node.RBNode<K, V>?)
+                        next.add(node.right as Node.RBNode<K, V>?)
+
+                        if (node.left != null) nodeNumber++
+                        if (node.right != null) nodeNumber++
+                    }
+                }
+
+                widtest += widtest % 2
+
+                lines.add(line)
+                val swap = level
+                level = next
+                next = swap
+                next.clear()
+            }
+
+            var perpiece: Int = lines[lines.size - 1].size * (widtest + ofSide)
+
+            for (i in 1..perpiece / 2) buffer.append("─")
+            buffer.append("┐\n")
+
+            for (i in 0..<lines.size) {
+                val line: MutableList<String?> = lines[i]
+
+                val hpw: Int = floor(perpiece / 2f - 1).toInt()
+
+                if (i > 0) {
+                    for (j in 0..<line.size) {
+                        var c: Char = ' '
+
+                        if (j % 2 == 1) {
+                            if (line[j - 1] != null) {
+                                c = if (line[j] != null) '┴' else '┘'
+                            } else {
+                                if (j < line.size && line[j] != null) c = '└'
+                            }
+                        }
+                        buffer.append(c)
+
+                        if (line[j] == null) {
+                            repeat(perpiece - 1) {
+                                buffer.append(" ")
+                            }
+                        } else {
+                            repeat(hpw) {
+                                buffer.append(if (j % 2 == 0) " " else "─")
+                            }
+                            buffer.append(if (j % 2 == 0) "┌" else "┐")
+                            repeat(hpw) {
+                                buffer.append(if (j % 2 != 0) " " else "─")
+                            }
+                        }
+                    }
+                    buffer.append("\n")
+                }
+                for (j in 0..<line.size) {
+                    var f: String? = line[j]
+                    if (f == null) f = ""
+                    val extra = if (f.contains("\u001B[31m")) 9 else 0
+                    val gap1: Int = ceil(perpiece / 2f - (f.length - extra) / 2f).toInt()
+                    val gap2: Int = floor(perpiece / 2f - (f.length - extra) / 2f).toInt()
+
+                    repeat(gap1) {
+                        buffer.append(" ")
+                    }
+                    buffer.append(f)
+
+                    repeat(gap2) {
+                        buffer.append(" ")
+                    }
+                }
+                buffer.append("\n")
+
+                perpiece /= 2
+            }
+            return buffer.toString()
         }
     }
 

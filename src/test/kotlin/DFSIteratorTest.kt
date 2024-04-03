@@ -35,7 +35,7 @@ class DFSIteratorTest {
         val result = mutableListOf<Int>()
         val expectedResult = arrayOf(0, 1, 2, 3, 4)
         keys.forEach { tree.add(it, it.toString()) }
-        for (i in tree.iterateDFS(mode = Tree.ModeDFS.SYMMETRIC)) result.add(i.key)
+        for (i in tree.iterateDFS(mode = Tree.ModeDFS.INORDER)) result.add(i.key)
 
         for (i in keys.indices) assert(result[i] == expectedResult[i])
     }
@@ -46,7 +46,7 @@ class DFSIteratorTest {
         val result = mutableListOf<Int>()
         val expectedResult = arrayOf(0, 1, 4, 3, 2)
         keys.forEach { tree.add(it, it.toString()) }
-        for (i in tree.iterateDFS(mode = Tree.ModeDFS.REVERSE)) result.add(i.key)
+        for (i in tree.iterateDFS(mode = Tree.ModeDFS.POSTORDER)) result.add(i.key)
 
         for (i in keys.indices) assert(result[i] == expectedResult[i])
     }

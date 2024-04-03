@@ -262,42 +262,42 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
 
     }
 
-    enum class ModeDFS {SIMPLE, REVERSE, SYMMETRIC}
+    enum class ModeDFS { PREORDER, POSTORDER, INORDER}
 
-    inner class DFSIterator(tree: Tree<K, V, T>, mode: ModeDFS = ModeDFS.SIMPLE): Iterator<Node<K, V, T>> {
+    inner class DFSIterator(tree: Tree<K, V, T>, mode: ModeDFS = ModeDFS.PREORDER): Iterator<Node<K, V, T>> {
 
 
         private var stack: Queue<Node<K, V, T>> = LinkedList()
 
         init {
             when (mode) {
-                ModeDFS.SIMPLE -> addToStackSimple(tree.root)
-                ModeDFS.SYMMETRIC -> addToStackSymmetric(tree.root)
-                ModeDFS.REVERSE -> addToStackSimpleReverse(tree.root)
+                ModeDFS.PREORDER -> addToStackPreOrder(tree.root)
+                ModeDFS.INORDER -> addToStackInOrder(tree.root)
+                ModeDFS.POSTORDER -> addToStackPostOrder(tree.root)
             }
         }
 
-        private fun addToStackSimple(current: Node<K, V, T>?) {
+        private fun addToStackPreOrder(current: Node<K, V, T>?) {
             if (current != null) {
                 stack.add(current)
-                this.addToStackSimple(current.left)
-                this.addToStackSimple(current.right)
+                this.addToStackPreOrder(current.left)
+                this.addToStackPreOrder(current.right)
             }
         }
 
-        private fun addToStackSimpleReverse(current: Node<K, V, T>?) {
+        private fun addToStackPostOrder(current: Node<K, V, T>?) {
             if (current != null) {
-                this.addToStackSimpleReverse(current.left)
-                this.addToStackSimpleReverse(current.right)
+                this.addToStackPostOrder(current.left)
+                this.addToStackPostOrder(current.right)
                 stack.add(current)
             }
         }
 
-        private fun addToStackSymmetric(current: Node<K, V, T>?) {
+        private fun addToStackInOrder(current: Node<K, V, T>?) {
             if (current != null) {
-                this.addToStackSymmetric(current.left)
+                this.addToStackInOrder(current.left)
                 stack.add(current)
-                this.addToStackSymmetric(current.right)
+                this.addToStackInOrder(current.right)
             }
         }
 
@@ -319,7 +319,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return BFSIterator(this)
     }
 
-    fun iterateDFS(mode: ModeDFS = ModeDFS.SIMPLE): DFSIterator {
+    fun iterateDFS(mode: ModeDFS = ModeDFS.PREORDER): DFSIterator {
         return DFSIterator(this, mode=mode)
     }
 
@@ -407,7 +407,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return buffer
     }
 
-    fun toStringBeautifulHeight(ofSide: Int = 4): String {
+    open fun toStringBeautifulHeight(ofSide: Int = 4): String {
         if (this.root == null) return ""
         else {
             val buffer: StringBuilder = StringBuilder()
