@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     `java-library`
     jacoco
+    application
 }
 
 
@@ -34,6 +35,10 @@ tasks.test {
                 }
             })
         )
+    }
+
+    reports {
+        junitXml.required = true
     }
 
     finalizedBy(tasks.jacocoTestReport)
