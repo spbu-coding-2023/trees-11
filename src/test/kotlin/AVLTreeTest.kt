@@ -85,6 +85,26 @@ class AVLTreeTest {
             val root = tree.root
             assert(root == tree.getNode(3))
         }
+
+        @Test
+        fun `Inserting with big right rotate (last node)`(){
+            val key1 = 5
+            val key2 = 6
+            val key3 = 4
+            val key4 = 2
+            val key5 = 3
+            val key6 = 1
+
+            tree.add(key1, key1.toString())
+            tree.add(key2, key2.toString())
+            tree.add(key3, key3.toString())
+            tree.add(key4, key4.toString())
+            tree.add(key5, key5.toString())
+            tree.add(key6, key6.toString())
+
+            val root = tree.root
+            assert(root == tree.getNode(3))
+        }
     }
 
     @Nested
