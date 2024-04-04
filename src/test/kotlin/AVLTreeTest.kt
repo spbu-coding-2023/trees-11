@@ -255,6 +255,34 @@ class AVLTreeTest {
             assert(newNode == root?.right)
             assert(newNode?.right != null && newNode.left != null)
         }
+
+        @Test
+        fun `Deletion of node with two children, which also have child (version 2)`(){
+            val key1 = 5
+            val key2 = 2
+            val key3 = 6
+            val key4 = 0
+            val key5 = 3
+            val key6 = 7
+            val key7 = 4
+
+            tree.add(key1, key1.toString())
+            tree.add(key2, key2.toString())
+            tree.add(key3, key3.toString())
+            tree.add(key4, key4.toString())
+            tree.add(key5, key5.toString())
+            tree.add(key6, key6.toString())
+            tree.add(key7, key7.toString())
+
+            tree.delete(6)
+
+            val newNode = tree.getNode(key1)
+            val root = tree.root
+
+            assert(tree.getNode(6) == null)
+            assert(newNode == root?.right)
+            assert(newNode?.right != null && newNode.left != null)
+        }
     }
 
     @Nested
