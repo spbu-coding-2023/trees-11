@@ -160,7 +160,6 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
     }
 
     override fun delete(key: K) {
-        val node = this.getNode(key) as Node.AVLNode<K, V>? ?: return
-        deleteNode(node, key)
+        root = deleteNode(root as Node.AVLNode<K, V>?, key)
     }
 }
