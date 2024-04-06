@@ -66,7 +66,7 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                 // 'nodeToDelete' is the root, so assign the value of 'replacementNode' to 'nodeToDelete' and delete 'replacementNode'
                 nodeToDelete.key = replacementNode.key
                 nodeToDelete.right = null
-                nodeToDelete.left = nodeToDelete.right
+                nodeToDelete.left = null
                 // Delete 'replacementNode'
             } else {
                 // Detach 'nodeToDelete' from the tree and move 'replacementNode' up
@@ -188,14 +188,6 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
         } else {
             node.right as Node.RBNode<K, V>?
         }
-    }
-
-    override fun max(): Node.RBNode<K, V>? {
-        return if (root == null) null else (root as Node.RBNode<K, V>).max()
-    }
-
-    override fun min(): Node.RBNode<K, V>? {
-        return if (root == null) null else (root as Node.RBNode<K, V>).min()
     }
 
     fun setColored(value: Boolean) {
