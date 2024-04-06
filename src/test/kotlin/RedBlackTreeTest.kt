@@ -46,34 +46,9 @@ class RedBlackTreeTest {
             val left = root?.left as Node.RBNode?
             val right = root?.right as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.key == 56
-                        && root.color == Node.RBNode.Color.BLACK
-                        && left?.key == 27
-                        && left.color == Node.RBNode.Color.RED
-                        && right?.key == 85
-                        && right.color == Node.RBNode.Color.RED
-            )
-        }
-    }
-
-    @Nested
-    inner class MinimumMaximumTests {
-        @Test
-        fun `max should return max node`() {
-            for (i in 1..10) {
-                tree.add(i, "")
-            }
-            assert(tree.max()?.key == 10)
-        }
-
-        @Test
-        fun `min should return min node`() {
-            for (i in 1..10) {
-                tree.add(i, "")
-            }
-            assert(tree.min()?.key == 1)
+            assert(root != null && root.key == 56 && root.color == Node.RBNode.Color.BLACK)
+            assert(left?.key == 27 && left.color == Node.RBNode.Color.RED)
+            assert(right?.key == 85 && right.color == Node.RBNode.Color.RED)
         }
     }
 
@@ -197,13 +172,10 @@ class RedBlackTreeTest {
             val parent = addedNode?.parent as Node.RBNode?
             val uncle = root?.right as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && parent?.color == Node.RBNode.Color.BLACK
-                        && uncle?.color == Node.RBNode.Color.BLACK
-                        && addedNode?.color == Node.RBNode.Color.RED
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(parent?.color == Node.RBNode.Color.BLACK)
+            assert(uncle?.color == Node.RBNode.Color.BLACK)
+            assert(addedNode?.color == Node.RBNode.Color.RED)
         }
 
         @Test
@@ -224,13 +196,10 @@ class RedBlackTreeTest {
             val parent = addedNode?.parent as Node.RBNode?
             val uncle = root?.right as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && parent?.color == Node.RBNode.Color.BLACK
-                        && uncle?.color == Node.RBNode.Color.BLACK
-                        && addedNode?.color == Node.RBNode.Color.RED
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(parent?.color == Node.RBNode.Color.BLACK)
+            assert(uncle?.color == Node.RBNode.Color.BLACK)
+            assert(addedNode?.color == Node.RBNode.Color.RED)
         }
 
         @Test
@@ -253,13 +222,10 @@ class RedBlackTreeTest {
             val leftChild = addedNode?.left as Node.RBNode?
             val rightChild = addedNode?.right as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && addedNode?.color == Node.RBNode.Color.BLACK
-                        && leftChild?.color == Node.RBNode.Color.RED
-                        && rightChild?.color == Node.RBNode.Color.RED
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(addedNode?.color == Node.RBNode.Color.BLACK)
+            assert(leftChild?.color == Node.RBNode.Color.RED)
+            assert(rightChild?.color == Node.RBNode.Color.RED)
         }
 
         @Test
@@ -283,16 +249,11 @@ class RedBlackTreeTest {
             val leftChild = addedNode?.left as Node.RBNode?
             val rightChild = addedNode?.right as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && addedNode?.color == Node.RBNode.Color.BLACK
-                        && leftChild?.color == Node.RBNode.Color.RED
-                        && rightChild?.color == Node.RBNode.Color.RED
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(addedNode?.color == Node.RBNode.Color.BLACK)
+            assert(leftChild?.color == Node.RBNode.Color.RED)
+            assert(rightChild?.color == Node.RBNode.Color.RED)
         }
-
-
     }
 
     /**
@@ -334,14 +295,11 @@ class RedBlackTreeTest {
             tree.delete(2)
             val root = tree.root as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 1
-                        && root.left == null
-                        && root.right == null
-                        && tree.getNode(2) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 1)
+            assert(root.left == null)
+            assert(root.right == null)
+            assert(tree.getNode(2) == null)
         }
 
         @Test
@@ -352,14 +310,11 @@ class RedBlackTreeTest {
             tree.delete(1)
             val root = tree.root as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 2
-                        && root.left == null
-                        && root.right == null
-                        && tree.getNode(1) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 2)
+            assert(root.left == null)
+            assert(root.right == null)
+            assert(tree.getNode(1) == null)
         }
 
         @Test
@@ -370,14 +325,11 @@ class RedBlackTreeTest {
             tree.delete(1)
             val root = tree.root as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 2
-                        && root.left == null
-                        && root.right == null
-                        && tree.getNode(1) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 2)
+            assert(root.left == null)
+            assert(root.right == null)
+            assert(tree.getNode(1) == null)
         }
 
         @Test
@@ -389,14 +341,11 @@ class RedBlackTreeTest {
             tree.delete(2)
             val root = tree.root as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 3
-                        && root.right == null
-                        && root.left?.key == 1
-                        && tree.getNode(2) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 3)
+            assert(root.right == null)
+            assert(root.left?.key == 1)
+            assert(tree.getNode(2) == null)
         }
 
         @Test
@@ -410,14 +359,11 @@ class RedBlackTreeTest {
 
             val root = tree.root as Node.RBNode?
 
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 2
-                        && root.left?.key == 1
-                        && root.right?.key == 4
-                        && tree.getNode(3) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 2)
+            assert(root.left?.key == 1)
+            assert(root.right?.key == 4)
+            assert(tree.getNode(3) == null)
         }
 
         @Test
@@ -447,19 +393,16 @@ class RedBlackTreeTest {
             val rootRightRight = rootRight?.right as Node.RBNode?
             val rootRightLeft = rootRight?.left as Node.RBNode?
             // check if the tree is balanced
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 3
-                        && root.left?.key == 1
-                        && root.right?.key == 5
-                        && rootRight?.color == Node.RBNode.Color.RED
-                        && rootRightLeft?.key == 4
-                        && rootRightLeft.color == Node.RBNode.Color.BLACK
-                        && rootRightRight?.key == 6
-                        && rootRightRight.color == Node.RBNode.Color.BLACK
-                        && tree.getNode(2) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 3)
+            assert(root.left?.key == 1)
+            assert(root.right?.key == 5)
+            assert(rootRight?.color == Node.RBNode.Color.RED)
+            assert(rootRightLeft?.key == 4)
+            assert(rootRightLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRightRight?.key == 6)
+            assert(rootRightRight!!.color == Node.RBNode.Color.BLACK)
+            assert(tree.getNode(2) == null)
         }
 
         @Test
@@ -488,20 +431,17 @@ class RedBlackTreeTest {
             val rootRightRight = rootRight?.right as Node.RBNode?
 
             // check if the tree is balanced
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 4
-                        && rootLeft?.key == 2
-                        && rootRight?.key == 5
-                        && rootRight.color == Node.RBNode.Color.BLACK
-                        && rootLeft.color == Node.RBNode.Color.BLACK
-                        && rootLeftLeft?.key == 1
-                        && rootLeftLeft.color == Node.RBNode.Color.RED
-                        && rootRightRight?.key == 6
-                        && rootRightRight.color == Node.RBNode.Color.RED
-                        && tree.getNode(3) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 4)
+            assert(rootLeft?.key == 2)
+            assert(rootRight?.key == 5)
+            assert(rootRight!!.color == Node.RBNode.Color.BLACK)
+            assert(rootLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootLeftLeft?.key == 1)
+            assert(rootLeftLeft!!.color == Node.RBNode.Color.RED)
+            assert(rootRightRight?.key == 6)
+            assert(rootRightRight!!.color == Node.RBNode.Color.RED)
+            assert(tree.getNode(3) == null)
         }
 
         @Test
@@ -532,18 +472,15 @@ class RedBlackTreeTest {
             val rootLeftRight = rootLeft?.right as Node.RBNode?
 
             // check if the tree is balanced
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 53
-                        && rootLeft?.key == 27
-                        && rootLeft.color == Node.RBNode.Color.RED
-                        && rootLeftLeft?.key == 17
-                        && rootLeftLeft.color == Node.RBNode.Color.BLACK
-                        && rootLeftRight?.key == 43
-                        && rootLeftRight.color == Node.RBNode.Color.BLACK
-                        && tree.getNode(32) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 53)
+            assert(rootLeft?.key == 27)
+            assert(rootLeft!!.color == Node.RBNode.Color.RED)
+            assert(rootLeftLeft?.key == 17)
+            assert(rootLeftLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootLeftRight?.key == 43)
+            assert(rootLeftRight!!.color == Node.RBNode.Color.BLACK)
+            assert(tree.getNode(32) == null)
         }
 
         @Test
@@ -575,20 +512,17 @@ class RedBlackTreeTest {
             val rootRightRightLeft = rootRightRight?.left as Node.RBNode?
 
             // check if the tree is balanced
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 53
-                        && rootRight?.key == 69
-                        && rootRight.color == Node.RBNode.Color.RED
-                        && rootRightLeft?.key == 62
-                        && rootRightLeft.color == Node.RBNode.Color.BLACK
-                        && rootRightRight?.key == 90
-                        && rootRightRight.color == Node.RBNode.Color.BLACK
-                        && rootRightRightLeft?.key == 81
-                        && rootRightRightLeft.color == Node.RBNode.Color.RED
-                        && tree.getNode(93) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 53)
+            assert(rootRight?.key == 69)
+            assert(rootRight!!.color == Node.RBNode.Color.RED)
+            assert(rootRightLeft?.key == 62)
+            assert(rootRightLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRightRight?.key == 90)
+            assert(rootRightRight!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRightRightLeft?.key == 81)
+            assert(rootRightRightLeft!!.color == Node.RBNode.Color.RED)
+            assert(tree.getNode(93) == null)
         }
 
         @Test
@@ -621,26 +555,23 @@ class RedBlackTreeTest {
             val rootLeftLeft = rootLeft?.left as Node.RBNode?
 
             // check if the tree is balanced
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 60
-                        && rootLeft?.key == 49
-                        && rootLeft.color == Node.RBNode.Color.RED
-                        && rootLeftLeft?.key == 42
-                        && rootLeftLeft.color == Node.RBNode.Color.BLACK
-                        && rootLeftRight?.key == 59
-                        && rootLeftRight.color == Node.RBNode.Color.BLACK
-                        && rootRight?.key == 84
-                        && rootRight.color == Node.RBNode.Color.RED
-                        && rootRightLeft?.key == 71
-                        && rootRightLeft.color == Node.RBNode.Color.BLACK
-                        && rootRightRight?.key == 93
-                        && rootRightRight.color == Node.RBNode.Color.BLACK
-                        && rootRightLeftLeft?.key == 68
-                        && rootRightLeftLeft.color == Node.RBNode.Color.RED
-                        && tree.getNode(23) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 60)
+            assert(rootLeft?.key == 49)
+            assert(rootLeft!!.color == Node.RBNode.Color.RED)
+            assert(rootLeftLeft?.key == 42)
+            assert(rootLeftLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootLeftRight?.key == 59)
+            assert(rootLeftRight!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRight?.key == 84)
+            assert(rootRight!!.color == Node.RBNode.Color.RED)
+            assert(rootRightLeft?.key == 71)
+            assert(rootRightLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRightRight?.key == 93)
+            assert(rootRightRight!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRightLeftLeft?.key == 68)
+            assert(rootRightLeftLeft!!.color == Node.RBNode.Color.RED)
+            assert(tree.getNode(23) == null)
         }
 
         @Test
@@ -672,26 +603,45 @@ class RedBlackTreeTest {
             val rootLeftLeft = rootLeft?.left as Node.RBNode?
 
             // check if the tree is balanced
-            assert(
-                root != null
-                        && root.color == Node.RBNode.Color.BLACK
-                        && root.key == 45
-                        && rootLeft?.key == 17
-                        && rootLeft.color == Node.RBNode.Color.BLACK
-                        && rootLeftLeft?.key == 1
-                        && rootLeftLeft.color == Node.RBNode.Color.RED
-                        && rootLeftRight?.key == 21
-                        && rootLeftRight.color == Node.RBNode.Color.RED
-                        && rootRight?.key == 78
-                        && rootRight.color == Node.RBNode.Color.RED
-                        && rootRightLeft?.key == 69
-                        && rootRightLeft.color == Node.RBNode.Color.BLACK
-                        && rootRightRight?.key == 88
-                        && rootRightRight.color == Node.RBNode.Color.BLACK
-                        && tree.getNode(28) == null
-                        && tree.getNode(42) == null
-            )
+            assert(root != null && root.color == Node.RBNode.Color.BLACK)
+            assert(root!!.key == 45)
+            assert(rootLeft?.key == 17)
+            assert(rootLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootLeftLeft?.key == 1)
+            assert(rootLeftLeft!!.color == Node.RBNode.Color.RED)
+            assert(rootLeftRight?.key == 21)
+            assert(rootLeftRight!!.color == Node.RBNode.Color.RED)
+            assert(rootRight?.key == 78)
+            assert(rootRight!!.color == Node.RBNode.Color.RED)
+            assert(rootRightLeft?.key == 69)
+            assert(rootRightLeft!!.color == Node.RBNode.Color.BLACK)
+            assert(rootRightRight?.key == 88)
+            assert(rootRightRight!!.color == Node.RBNode.Color.BLACK)
+            assert(tree.getNode(28) == null)
+            assert(tree.getNode(42) == null)
         }
     }
 
+    @Test
+    fun `toStringBeautifulHeight should work correctly on empty tree`() {
+        assert(tree.toStringBeautifulHeight() == "")
+    }
+
+    @Test
+    fun `toStringBeautifulHeight should work correctly on sample`() {
+        // no-child, left, right and 2 child node example
+        // because it works similar on all this scenarios
+        val keys = arrayOf(0, 1, -1, 2, -2)
+        keys.forEach { tree.add(it, it.toString()) }
+
+        val strTree = tree.toStringBeautifulHeight()
+        val expectedResult = """────────────────────────┐
+                     (0: 0)                     
+            ┌───────────┴───────────┐           
+        (-1: -1)                 (1: 1)         
+      ┌─────┘                       └─────┐     
+  (-2: -2)                             (2: 2)   
+"""
+        assert(strTree == expectedResult)
+    }
 }

@@ -9,50 +9,6 @@ class RBNodeTest {
         tree = RBTree()
     }
 
-    // max and min tests
-    @Test
-    fun `max should return if empty`() {
-        assert(tree.max()?.value == null)
-    }
-
-    @Test
-    fun `min should return if empty`() {
-        assert(tree.min()?.value == null)
-    }
-
-    @Test
-    fun `max should return max value`() {
-        tree.add(1, "A")
-        tree.add(2, "B")
-        tree.add(3, "C")
-        tree.add(4, "D")
-        tree.add(5, "E")
-        tree.add(6, "F")
-        tree.add(7, "G")
-        tree.add(8, "H")
-        tree.add(9, "I")
-        tree.add(10, "J")
-
-        assert(tree.max()?.value == "J")
-    }
-
-    @Test
-    fun `min should return min value`() {
-        tree.add(1, "A")
-        tree.add(2, "B")
-        tree.add(3, "C")
-        tree.add(4, "D")
-        tree.add(5, "E")
-        tree.add(6, "F")
-        tree.add(7, "G")
-        tree.add(8, "H")
-        tree.add(9, "I")
-        tree.add(10, "J")
-
-        assert(tree.min()?.value == "A")
-    }
-
-
     // toString tests
     @Test
     fun `should return null if tree is empty`() {

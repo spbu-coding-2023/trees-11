@@ -37,27 +37,10 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
                 "($key: $value)"
             }
         }
-
-        fun max(): RBNode<K, V> {
-            var current = this
-            while (current.right != null) {
-                current = current.right as RBNode<K, V>
-            }
-            return current
-        }
-
-        fun min(): RBNode<K, V> {
-            var current = this
-            while (current.left != null) {
-                current = current.left as RBNode<K, V>
-            }
-            return current
-        }
         val isOnLeft: Boolean
             get() = this == parent?.left
 
         fun sibling(): RBNode<K, V>? {
-
             if (parent == null) return null
 
             if (isOnLeft) return parent!!.right as RBNode<K, V>?
