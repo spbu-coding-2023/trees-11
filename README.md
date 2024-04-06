@@ -31,6 +31,10 @@
 
 ## Как пользоватся
 
+### Запуск программы
+```shell
+./gradlew build
+```
 ### Инициализация
 ```kotlin
 val binaryTree = BinaryTree<Int, String>()
