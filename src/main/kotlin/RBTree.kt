@@ -2,8 +2,10 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree<K, V, Node.RBNode<K, V>>(root) {
-
-    override fun add(key: K, value: V) {
+    override fun add(
+        key: K,
+        value: V,
+    ) {
         val node: Node.RBNode<K, V> = Node.RBNode(key, value)
         this.addNode(node)
     }
@@ -19,8 +21,9 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
             }
         }
-        if (this.root == null) this.root = tree.root
-        else {
+        if (this.root == null) {
+            this.root = tree.root
+        } else {
             tree.forEach {
                 this.add(it.key, it.value)
             }
@@ -54,8 +57,11 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                     nodeToDelete.sibling()!!.color = Node.RBNode.Color.RED
                 }
                 // Delete 'nodeToDelete' from the tree
-                if (nodeToDelete.isOnLeft) parentNode!!.left = null
-                else parentNode!!.right = null
+                if (nodeToDelete.isOnLeft) {
+                    parentNode!!.left = null
+                } else {
+                    parentNode!!.right = null
+                }
             }
             return
         }
@@ -70,8 +76,11 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                 // Delete 'replacementNode'
             } else {
                 // Detach 'nodeToDelete' from the tree and move 'replacementNode' up
-                if (nodeToDelete.isOnLeft) parentNode!!.left = replacementNode
-                else parentNode!!.right = replacementNode
+                if (nodeToDelete.isOnLeft) {
+                    parentNode!!.left = replacementNode
+                } else {
+                    parentNode!!.right = replacementNode
+                }
 
                 replacementNode.parent = parentNode
 
@@ -91,7 +100,10 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
         deleteNode(replacementNode)
     }
 
-    private fun swapValues(nodeA: Node.RBNode<K, V>, nodeB: Node.RBNode<K, V>) {
+    private fun swapValues(
+        nodeA: Node.RBNode<K, V>,
+        nodeB: Node.RBNode<K, V>,
+    ) {
         val tempKey = nodeA.key
         val tempValue = nodeA.value
 
@@ -110,16 +122,20 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
         val parent = doubleBlackNode.parent as Node.RBNode<K, V>?
 
         // If there is no sibling, the double black is pushed up to its parent
-        if (sibling == null) fixDoubleBlack(parent)
-        else {
+        if (sibling == null) {
+            fixDoubleBlack(parent)
+        } else {
             if (parent == null) return
             if (sibling.color == Node.RBNode.Color.RED) {
                 // If the sibling is red, perform rotation and color changes
                 parent.color = Node.RBNode.Color.RED
                 sibling.color = Node.RBNode.Color.BLACK
 
-                if (sibling.isOnLeft) parent.rightRotate() // Right case
-                else parent.leftRotate() // Left case
+                if (sibling.isOnLeft) {
+                    parent.rightRotate() // Right case
+                } else {
+                    parent.leftRotate() // Left case
+                }
 
                 fixDoubleBlack(doubleBlackNode) // Recursively fix double black
             } else {
@@ -159,8 +175,11 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
                 } else {
                     // If both children of the sibling are black
                     sibling.color = Node.RBNode.Color.RED
-                    if (parent.color == Node.RBNode.Color.BLACK) fixDoubleBlack(parent)
-                    else parent.color = Node.RBNode.Color.BLACK
+                    if (parent.color == Node.RBNode.Color.BLACK) {
+                        fixDoubleBlack(parent)
+                    } else {
+                        parent.color = Node.RBNode.Color.BLACK
+                    }
                 }
             }
         }
@@ -245,8 +264,9 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
     }
 
     override fun toStringBeautifulHeight(ofSide: Int): String {
-        if (this.root == null) return ""
-        else {
+        if (this.root == null) {
+            return ""
+        } else {
             val buffer: StringBuilder = StringBuilder()
 
             val lines: MutableList<MutableList<String?>> = mutableListOf()
@@ -393,5 +413,4 @@ class RBTree<K : Comparable<K>, V : Any>(root: Node.RBNode<K, V>? = null) : Tree
         newRoot?.right = this
         this.parent = newRoot
     }
-
 }

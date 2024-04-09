@@ -1,7 +1,5 @@
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.math.acos
 
 class DFSIteratorTest {
     private lateinit var tree: BinaryTree<Int, String>
@@ -50,5 +48,4 @@ class DFSIteratorTest {
 
         for (i in keys.indices) assert(result[i] == expectedResult[i])
     }
-
 }

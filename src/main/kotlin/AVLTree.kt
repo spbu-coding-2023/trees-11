@@ -1,6 +1,8 @@
 class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tree<K, V, Node.AVLNode<K, V>>(root) {
-
-    override fun add(key: K, value: V) {
+    override fun add(
+        key: K,
+        value: V,
+    ) {
         this.root = insert(this.root as Node.AVLNode<K, V>?, key, value)
     }
 
@@ -10,7 +12,10 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
         return node.height
     }
 
-    private fun max(a: Int, b: Int): Int {
+    private fun max(
+        a: Int,
+        b: Int,
+    ): Int {
         return if ((a > b)) a else b
     }
 
@@ -20,13 +25,20 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
         return height(node.left as Node.AVLNode<K, V>?) - height(node.right as Node.AVLNode<K, V>?)
     }
 
-    private fun insert(node: Node.AVLNode<K, V>?, key: K, value: V): Node.AVLNode<K, V>? {
-
+    private fun insert(
+        node: Node.AVLNode<K, V>?,
+        key: K,
+        value: V,
+    ): Node.AVLNode<K, V>? {
         if (node == null) return Node.AVLNode(key, value)
 
-        if (key < node.key) node.left = insert(node.left as Node.AVLNode<K, V>?, key, value)
-        else if (key > node.key) node.right = insert(node.right as Node.AVLNode<K, V>?, key, value)
-        else return node
+        if (key < node.key) {
+            node.left = insert(node.left as Node.AVLNode<K, V>?, key, value)
+        } else if (key > node.key) {
+            node.right = insert(node.right as Node.AVLNode<K, V>?, key, value)
+        } else {
+            return node
+        }
 
         node.height = 1 + max(height(node.left as Node.AVLNode<K, V>?), height(node.right as Node.AVLNode<K, V>?))
 
@@ -49,23 +61,33 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
         return node
     }
 
-    private fun deleteNode(node: Node.AVLNode<K, V>?, key: K): Node.AVLNode<K, V>? {
+    private fun deleteNode(
+        node: Node.AVLNode<K, V>?,
+        key: K,
+    ): Node.AVLNode<K, V>? {
         var root = node
         if (root == null) return null
 
-        if (key < root.key) root.left = deleteNode(root.left as Node.AVLNode<K, V>?, key)
-        else if (key > root.key) root.right = deleteNode(root.right as Node.AVLNode<K, V>?, key)
-        else {
+        if (key < root.key) {
+            root.left = deleteNode(root.left as Node.AVLNode<K, V>?, key)
+        } else if (key > root.key) {
+            root.right = deleteNode(root.right as Node.AVLNode<K, V>?, key)
+        } else {
             if ((root.left == null) || (root.right == null)) {
                 var temp: Node.AVLNode<K, V>? = null
-                temp = if (temp === root.left) root.right as Node.AVLNode<K, V>?
-                else root.left as Node.AVLNode<K, V>?
+                temp =
+                    if (temp === root.left) {
+                        root.right as Node.AVLNode<K, V>?
+                    } else {
+                        root.left as Node.AVLNode<K, V>?
+                    }
 
                 if (temp == null) {
                     temp = root
                     root = null
-                } else root = temp
-
+                } else {
+                    root = temp
+                }
             } else {
                 val temp = minValueNode(root.right as Node.AVLNode<K, V>?)
 
@@ -102,7 +124,7 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
     private fun minValueNode(node: Node.AVLNode<K, V>?): Node.AVLNode<K, V>? {
         var current = node
 
-        /* loop down to find the leftmost leaf */
+        // loop down to find the leftmost leaf
         while (current!!.left != null) current = current.left as Node.AVLNode<K, V>?
 
         return current
@@ -143,8 +165,9 @@ class AVLTree<K : Comparable<K>, V : Any>(root: Node.AVLNode<K, V>? = null) : Tr
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
             }
         }
-        if (this.root == null) this.root = tree.root
-        else {
+        if (this.root == null) {
+            this.root = tree.root
+        } else {
             tree.forEach {
                 this.add(it.key, it.value)
             }

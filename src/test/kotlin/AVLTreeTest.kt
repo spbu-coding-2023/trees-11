@@ -15,7 +15,7 @@ class AVLTreeTest {
     @Nested
     inner class AddTests {
         @Test
-        fun `Inserting a node into an empty tree`(){
+        fun `Inserting a node into an empty tree`() {
             val key = 1
             val value = "0"
 
@@ -24,7 +24,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Inserting a duplicate node`(){
+        fun `Inserting a duplicate node`() {
             tree.add(1, "0")
             tree.add(1, "0")
 
@@ -35,7 +35,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Inserting with left rotate`(){
+        fun `Inserting with left rotate`() {
             val key1 = 0
             val key2 = 1
             val key3 = 2
@@ -51,7 +51,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Inserting with right rotate`(){
+        fun `Inserting with right rotate`() {
             val key1 = 2
             val key2 = 1
             val key3 = 0
@@ -67,7 +67,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Inserting with big left rotate (last node)`(){
+        fun `Inserting with big left rotate (last node)`() {
             val key1 = 2
             val key2 = 1
             val key3 = 5
@@ -87,7 +87,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Inserting with big right rotate (last node)`(){
+        fun `Inserting with big right rotate (last node)`() {
             val key1 = 5
             val key2 = 6
             val key3 = 4
@@ -108,7 +108,7 @@ class AVLTreeTest {
     }
 
     @Nested
-    inner class MinMaxTests(){
+    inner class MinMaxTests() {
         @Test
         fun `Max should return max node`() {
             for (i in 1..10) {
@@ -118,7 +118,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Max from null tree returns null`(){
+        fun `Max from null tree returns null`() {
             assert(tree.max() == null)
         }
 
@@ -131,15 +131,15 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Min from null tree returns null`(){
+        fun `Min from null tree returns null`() {
             assert(tree.min() == null)
         }
     }
 
     @Nested
-    inner class DeleteTests{
+    inner class DeleteTests {
         @Test
-        fun `Deletion of the non-existent node should do nothing`(){
+        fun `Deletion of the non-existent node should do nothing`() {
             tree.add(1, "0")
             tree.add(2, "890")
 
@@ -150,7 +150,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Deletion of tree's root`(){
+        fun `Deletion of tree's root`() {
             val keyLeft = 0
             val keyRoot = 1
             val keyRight = 2
@@ -168,7 +168,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Deletion of leaf(node with no children)`(){
+        fun `Deletion of leaf(node with no children)`() {
             val keyRoot = 0
             val key = 1
             val childKey = 2
@@ -185,7 +185,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Deletion of node with one child`(){
+        fun `Deletion of node with one child`() {
             val key1 = 3
             val key2 = 2
             val key3 = 1
@@ -204,7 +204,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Deletion of node with two children`(){
+        fun `Deletion of node with two children`() {
             val key1 = 2
             val key2 = 1
             val key3 = 5
@@ -229,7 +229,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Deletion of node with two children, which also have child`(){
+        fun `Deletion of node with two children, which also have child`() {
             val key1 = 2
             val key2 = 1
             val key3 = 5
@@ -257,7 +257,7 @@ class AVLTreeTest {
         }
 
         @Test
-        fun `Deletion of node with two children, which also have child (version 2)`(){
+        fun `Deletion of node with two children, which also have child (version 2)`() {
             val key1 = 5
             val key2 = 2
             val key3 = 6
@@ -286,7 +286,7 @@ class AVLTreeTest {
     }
 
     @Nested
-    inner class MergeTests{
+    inner class MergeTests {
         @Test
         fun `Merge should work correctly on 2 empty trees`() {
             val secondTree = AVLTree<Int, String>()
@@ -349,9 +349,10 @@ class AVLTreeTest {
             val message =
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
 
-            val exception = assertFailsWith<IllegalArgumentException> {
-                tree.merge(secondTree)
-            }
+            val exception =
+                assertFailsWith<IllegalArgumentException> {
+                    tree.merge(secondTree)
+                }
             assert(exception.message == message)
         }
     }

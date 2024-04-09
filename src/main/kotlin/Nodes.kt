@@ -3,15 +3,14 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
     var value: V,
     internal var left: Node<K, V, T>? = null,
     internal var right: Node<K, V, T>? = null,
-    internal var parent: Node<K, V, T>? = null
+    internal var parent: Node<K, V, T>? = null,
 ) {
-
     class BinaryNode<K : Comparable<K>, V>(
         key: K,
         value: V,
         left: BinaryNode<K, V>? = null,
         right: BinaryNode<K, V>? = null,
-        parent: BinaryNode<K, V>? = null
+        parent: BinaryNode<K, V>? = null,
     ) : Node<K, V, BinaryNode<K, V>>(key, value, left, right, parent)
 
     class RBNode<K : Comparable<K>, V>(
@@ -31,12 +30,13 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
         }
 
         override fun toString(): String {
-            return if ( colored && color == Color.RED) {
+            return if (colored && color == Color.RED) {
                 "${RED_COLOR}($key: $value)${RESET_COLOR}"
             } else {
                 "($key: $value)"
             }
         }
+
         val isOnLeft: Boolean
             get() = this == parent?.left
 
@@ -50,7 +50,7 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
 
         fun hasRedChild(): Boolean {
             return (left != null && (left as RBNode<K, V>).color == Color.RED) ||
-                    (right != null && (right as RBNode<K, V>).color == Color.RED)
+                (right != null && (right as RBNode<K, V>).color == Color.RED)
         }
     }
 
@@ -60,9 +60,8 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
         left: AVLNode<K, V>? = null,
         right: AVLNode<K, V>? = null,
         parent: AVLNode<K, V>? = null,
-        var height: Int = 1
+        var height: Int = 1,
     ) : Node<K, V, AVLNode<K, V>>(key, value, left, right, parent) {
-
         /*override fun toString(): String {
             val rightHeight = if (right != null) (right as AVLNode<K, V>).height else 0
             val leftHeight = if (left != null) (left as AVLNode<K, V>).height else 0
@@ -84,7 +83,6 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
             }
             return current
         }
-
     }
 
     override fun toString(): String {
@@ -98,5 +96,4 @@ open class Node<K : Comparable<K>, V, T : Node<K, V, T>> internal constructor(
     override fun hashCode(): Int {
         return super.hashCode()
     }
-
 }
