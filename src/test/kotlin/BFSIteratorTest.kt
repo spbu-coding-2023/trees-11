@@ -1,8 +1,7 @@
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class BFSIteratorTest{
+class BFSIteratorTest {
     private lateinit var tree: BinaryTree<Int, String>
 
     @BeforeEach
@@ -27,5 +26,4 @@ class BFSIteratorTest{
 
         for (i in keys.indices) assert(result[i] == expectedResult[i])
     }
-
 }

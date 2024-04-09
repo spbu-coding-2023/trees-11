@@ -117,9 +117,10 @@ class RedBlackTreeTest {
             val message =
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
 
-            val exception = assertFailsWith<IllegalArgumentException> {
-                tree.merge(secondTree)
-            }
+            val exception =
+                assertFailsWith<IllegalArgumentException> {
+                    tree.merge(secondTree)
+                }
             assert(exception.message == message)
         }
     }
@@ -264,7 +265,6 @@ class RedBlackTreeTest {
      */
     @Nested
     inner class DeleteNodeTests {
-
         @Test
         fun `should not find node and return`() {
             tree.add(1, "A")
@@ -457,9 +457,19 @@ class RedBlackTreeTest {
             //     └── (32 Red)                                     └── (27 Red)
             //         |   ┌── (27 Red)                                 └── (17 Black)
             //         └── (17 Black)
-            val array = arrayOf(
-                32, 81, 17, 90, 93, 43, 27, 53, 69, 62
-            )
+            val array =
+                arrayOf(
+                    32,
+                    81,
+                    17,
+                    90,
+                    93,
+                    43,
+                    27,
+                    53,
+                    69,
+                    62,
+                )
 
             for (num in array) {
                 tree.add(num, "$num")
@@ -495,9 +505,19 @@ class RedBlackTreeTest {
             //     |   ┌── (43 Black)                                └── (27 Red)
             //     └── (27 Red)                                          └── (17 Black)
             //         └── (17 Black)
-            val array = arrayOf(
-                32, 81, 17, 90, 93, 43, 27, 53, 69, 62
-            )
+            val array =
+                arrayOf(
+                    32,
+                    81,
+                    17,
+                    90,
+                    93,
+                    43,
+                    27,
+                    53,
+                    69,
+                    62,
+                )
 
             for (num in array) {
                 tree.add(num, "$num")
@@ -537,9 +557,18 @@ class RedBlackTreeTest {
             //     |   |   └── (49 Red)                         └── (49 Red)
             //     └── (42 Red)                                      └── (42 Black)
             //         └── (23 Black)
-            val array = arrayOf(
-                60, 84, 23, 71, 93, 59, 68, 42, 49
-            )
+            val array =
+                arrayOf(
+                    60,
+                    84,
+                    23,
+                    71,
+                    93,
+                    59,
+                    68,
+                    42,
+                    49,
+                )
             for (num in array) {
                 tree.add(num, "$num")
             }
@@ -585,9 +614,18 @@ class RedBlackTreeTest {
             //     |   ┌── (21 Red)           (delete 28)         |   ┌── (21 Red)
             //     └── (17 Black)                                 └── (17 Black)
             //         └── (1 Red)                                    └── (1 Red)
-            val array = arrayOf(
-                21, 69, 28, 17, 42, 1, 78, 88, 45,
-            )
+            val array =
+                arrayOf(
+                    21,
+                    69,
+                    28,
+                    17,
+                    42,
+                    1,
+                    78,
+                    88,
+                    45,
+                )
             for (num in array) {
                 tree.add(num, "$num")
             }

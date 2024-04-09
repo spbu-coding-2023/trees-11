@@ -1,4 +1,5 @@
 [![MIT License][license-shield]][license-url]
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/cicirello/jacoco-badge-generator?label=Marketplace&logo=GitHub)](https://github.com/marketplace/actions/jacoco-badge-generator)
 
 <h1 align="center">Борцы Даня, Саша, Мухаммет</h1>
 

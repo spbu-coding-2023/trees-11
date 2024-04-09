@@ -59,7 +59,6 @@ class RBNodeTest {
         assert(!(tree.getNode(3) as Node.RBNode<Int, String>).isOnLeft)
     }
 
-
     // sibling tests
     @Test
     fun `sibling should return null if parent is null`() {
@@ -84,7 +83,6 @@ class RBNodeTest {
 
         assert((tree.getNode(3) as Node.RBNode<Int, String>).sibling()?.value == "A")
     }
-
 
     // hasRedChild tests
     @Test

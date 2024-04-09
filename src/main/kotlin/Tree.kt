@@ -2,13 +2,17 @@ import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
 
-open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
-    var root: Node<K, V, T>? = null
-): Iterable<Node<K, V, T>> {
-    open fun add(key: K, value: V) {
+open class Tree<K : Comparable<K>, V : Any, T : Node<K, V, T>>(
+    var root: Node<K, V, T>? = null,
+) : Iterable<Node<K, V, T>> {
+    open fun add(
+        key: K,
+        value: V,
+    ) {
         val node: Node<K, V, T> = Node<K, V, T>(key, value)
         this.addNode(node)
     }
+
     open fun addNode(node: Node<K, V, T>) {
         require(this.root?.key != node.key) {
             throw IllegalArgumentException("Multiple uses of key: ${node.key}. To modify value use set function")
@@ -19,17 +23,27 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
             val root: Node<K, V, T> = this.root!!
             // not-null assertion operator because null check
             val isLeft: Boolean = root.key > node.key
-            addNode(node,
+            addNode(
+                node,
                 (if (isLeft) root.left else root.right),
                 root,
-                isLeft)
+                isLeft,
+            )
         }
     }
 
-    private tailrec fun addNode(node: Node<K, V, T>, current: Node<K, V, T>?, parent: Node<K, V, T>, isLeft: Boolean) {
+    private tailrec fun addNode(
+        node: Node<K, V, T>,
+        current: Node<K, V, T>?,
+        parent: Node<K, V, T>,
+        isLeft: Boolean,
+    ) {
         if (current == null) {
-            if (isLeft) parent.left = node
-            else parent.right = node
+            if (isLeft) {
+                parent.left = node
+            } else {
+                parent.right = node
+            }
 
             node.parent = parent
         } else {
@@ -37,18 +51,22 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
                 throw IllegalArgumentException("Multiple uses of key: ${node.key}. To modify value use set function")
             }
             val isAddedLeft: Boolean = current.key > node.key
-            addNode(node,
+            addNode(
+                node,
                 (if (isAddedLeft) current.left else current.right),
                 current,
-                isAddedLeft)
+                isAddedLeft,
+            )
         }
     }
 
-    operator fun set(key: K, value: V) {
+    operator fun set(
+        key: K,
+        value: V,
+    ) {
         if (!this.isKey(key)) {
             this.add(key, value)
-        }
-        else {
+        } else {
             this.getNode(key)!!.value = value
             // not-null assertion operator because key is exist in tree
         }
@@ -60,18 +78,33 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return getNode(key, this.root)
     }
 
-    private tailrec fun getNode(key: K, current: Node<K, V, T>?): Node<K, V, T>? {
-        return if (current == null) null
-        else if (current.key == key) current
-        else if (current.key > key) getNode(key, current.left)
-        else getNode(key, current.right)
+    private tailrec fun getNode(
+        key: K,
+        current: Node<K, V, T>?,
+    ): Node<K, V, T>? {
+        return if (current == null) {
+            null
+        } else if (current.key == key) {
+            current
+        } else if (current.key > key) {
+            getNode(key, current.left)
+        } else {
+            getNode(key, current.right)
+        }
     }
 
-    fun getOrDefault(key: K, default: V): V {
+    fun getOrDefault(
+        key: K,
+        default: V,
+    ): V {
         val node: Node<K, V, T>? = getNode(key)
         return node?.value ?: default
     }
-    fun getOrDefaultNode(key: K, default: Node<K, V, T>): Node<K, V, T> {
+
+    fun getOrDefaultNode(
+        key: K,
+        default: Node<K, V, T>,
+    ): Node<K, V, T> {
         return getNode(key, root) ?: default
     }
 
@@ -151,11 +184,19 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return isKey(key, this.root)
     }
 
-    private tailrec fun isKey(key: K, current: Node<K, V, T>?): Boolean {
-        return if (current == null) false
-        else if (current.key == key) true
-        else if (current.key > key) isKey(key, current.left)
-        else isKey(key, current.right)
+    private tailrec fun isKey(
+        key: K,
+        current: Node<K, V, T>?,
+    ): Boolean {
+        return if (current == null) {
+            false
+        } else if (current.key == key) {
+            true
+        } else if (current.key > key) {
+            isKey(key, current.left)
+        } else {
+            isKey(key, current.right)
+        }
     }
 
     open fun min(): Node<K, V, T>? {
@@ -213,7 +254,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     inner class ByKeyIterator(
-        private val tree: Tree<K, V, T>
+        private val tree: Tree<K, V, T>,
     ) : Iterator<Node<K, V, T>> {
         private var current: Node<K, V, T>? = tree.min()
 
@@ -228,9 +269,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         }
     }
 
-
-    inner class BFSIterator(tree: Tree<K, V, T>): Iterator<Node<K, V, T>> {
-
+    inner class BFSIterator(tree: Tree<K, V, T>) : Iterator<Node<K, V, T>> {
         private var queue: Queue<Node<K, V, T>> = LinkedList()
 
         init {
@@ -259,14 +298,11 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         override fun next(): Node<K, V, T> {
             return queue.poll()
         }
-
     }
 
-    enum class ModeDFS { PREORDER, POSTORDER, INORDER}
+    enum class ModeDFS { PREORDER, POSTORDER, INORDER }
 
-    inner class DFSIterator(tree: Tree<K, V, T>, mode: ModeDFS = ModeDFS.PREORDER): Iterator<Node<K, V, T>> {
-
-
+    inner class DFSIterator(tree: Tree<K, V, T>, mode: ModeDFS = ModeDFS.PREORDER) : Iterator<Node<K, V, T>> {
         private var stack: Queue<Node<K, V, T>> = LinkedList()
 
         init {
@@ -308,7 +344,6 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         override fun next(): Node<K, V, T> {
             return stack.poll()
         }
-
     }
 
     override fun iterator(): Iterator<Node<K, V, T>> {
@@ -320,7 +355,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     fun iterateDFS(mode: ModeDFS = ModeDFS.PREORDER): DFSIterator {
-        return DFSIterator(this, mode=mode)
+        return DFSIterator(this, mode = mode)
     }
 
     open fun merge(tree: Tree<K, V, T>) {
@@ -329,8 +364,11 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
                 "Merge operation is defined only when attachable tree's keys is always bigger than base tree's keys"
             }
         }
-        if (this.root == null) this.root = tree.root
-        else this.max()!!.right = tree.root
+        if (this.root == null) {
+            this.root = tree.root
+        } else {
+            this.max()!!.right = tree.root
+        }
     }
 
     fun split(x: K): Pair<Tree<K, V, T>, Tree<K, V, T>> {
@@ -338,8 +376,11 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         val biggerTree: Tree<K, V, T> = Tree()
 
         for (i in this.iterateBFS()) {
-            if (i.key < x) lowerTree.addNode(i)
-            else biggerTree.addNode(i)
+            if (i.key < x) {
+                lowerTree.addNode(i)
+            } else {
+                biggerTree.addNode(i)
+            }
         }
         return Pair(lowerTree, biggerTree)
     }
@@ -351,7 +392,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         return clonedTree
     }
 
-    enum class TreeStringMode {NORMAL, WIDTH, HEIGHT}
+    enum class TreeStringMode { NORMAL, WIDTH, HEIGHT }
 
     fun toString(mode: TreeStringMode = TreeStringMode.NORMAL): String {
         return when (mode) {
@@ -365,7 +406,7 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         val buffer = StringBuilder()
 
         buffer.append("[")
-        this.forEach {buffer.append("${it.toString()}, ")}
+        this.forEach { buffer.append("$it, ") }
         val preResult = buffer.removeSuffix(", ").toString()
 
         val result = StringBuilder()
@@ -376,8 +417,11 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     open fun toStringBeautifulWidth(): String {
-        return if (this.root == null) ""
-        else this.toStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!!).toString()
+        return if (this.root == null) {
+            ""
+        } else {
+            this.toStringBeautifulWidth(StringBuilder(), true, StringBuilder(), this.root!!).toString()
+        }
         // not-null assertion operator because null check
     }
 
@@ -385,8 +429,8 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
         prefix: StringBuilder,
         isTail: Boolean,
         buffer: StringBuilder,
-        current: Node<K, V, T>): StringBuilder
-    {
+        current: Node<K, V, T>,
+    ): StringBuilder {
         if (current.right != null) {
             val newPrefix = StringBuilder()
             newPrefix.append(prefix)
@@ -408,8 +452,9 @@ open class Tree <K: Comparable<K>, V: Any, T: Node<K, V, T>> (
     }
 
     open fun toStringBeautifulHeight(ofSide: Int = 4): String {
-        if (this.root == null) return ""
-        else {
+        if (this.root == null) {
+            return ""
+        } else {
             val buffer: StringBuilder = StringBuilder()
 
             val lines: MutableList<MutableList<String?>> = mutableListOf()

@@ -1,8 +1,6 @@
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class NodeTest{
+class NodeTest {
     @Test
     fun `Node should be equal if values and keys are equal`() {
         val key = 15
@@ -25,6 +23,7 @@ class NodeTest{
 
         assert(nodeOne != nodeSecond)
     }
+
     @Test
     fun `Node should be equal if keys aren't equal`() {
         val keyOne = 15

@@ -5,7 +5,6 @@ plugins {
     application
 }
 
-
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
@@ -33,7 +32,7 @@ tasks.test {
                     println("  >   Failed: ${result.failedTestCount}")
                     println("  >  Skipped: ${result.skippedTestCount}")
                 }
-            })
+            }),
         )
     }
 
@@ -47,7 +46,7 @@ tasks.test {
 tasks.named<JacocoReport>("jacocoTestReport") {
     dependsOn(tasks.test)
     reports {
-        csv.required  = true
+        csv.required = true
         xml.required = false
         html.required = false
     }
